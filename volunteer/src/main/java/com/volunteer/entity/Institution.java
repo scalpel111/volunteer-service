@@ -31,7 +31,7 @@ public class Institution implements Serializable {
 
     private String admin;
 
-    private String admin Id;
+    private String adminId;
 
     private String tellphone;
 
@@ -39,5 +39,6 @@ public class Institution implements Serializable {
 
     private Integer count;
 
+    private String address;
 
 }

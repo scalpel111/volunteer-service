@@ -1,16 +1,25 @@
 package com.volunteer.service;
 
+import com.volunteer.common.Result;
+import com.volunteer.dto.InstitutionDTO;
 import com.volunteer.entity.Institution;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.swagger.models.auth.In;
 
-/**
- * <p>
- *  服务类
- * </p>
- *
- * @author 刘毅晨
- * @since 2023-03-22
- */
+import java.util.List;
+
 public interface InstitutionService extends IService<Institution> {
+
+    Result<List<InstitutionDTO>> getInstitution();
+
+    Result<List<InstitutionDTO>> getByInstitutionName(String name);
+
+    Result<List<Institution>> select();
+
+    Result<Object> updateInstitution(Institution institution);
+
+    Result<Object> insert(Institution institution);
+
+    Result<Object> deleteById(int id);
 
 }

@@ -39,5 +39,8 @@ public class User implements Serializable {
 
     private Double serviceTime;
 
+    private String address;
+
+    private String declaration;
 
 }

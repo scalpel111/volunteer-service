@@ -1,20 +1,22 @@
 package com.volunteer.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.volunteer.common.Result;
+import com.volunteer.dto.LoginDTO;
+import com.volunteer.service.UserService;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
+import javax.annotation.Resource;
 
-/**
- * <p>
- *  前端控制器
- * </p>
- *
- * @author 刘毅晨
- * @since 2023-03-22
- */
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
+    @Resource
+    private UserService userService;
+
+    @GetMapping("/{code}")
+    public Result<LoginDTO> login(@PathVariable("code") String code){
+        return userService.login(code);
+    }
 }

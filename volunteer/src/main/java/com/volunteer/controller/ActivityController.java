@@ -1,63 +1,67 @@
 package com.volunteer.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
 import com.volunteer.entity.Activity;
-import com.volunteer.mapper.ActivityMapper;
 import com.volunteer.service.ActivityService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/activity")
 public class ActivityController {
 
     @Resource
-    private ActivityMapper activityMapper;
+    private ActivityService activityService;
 
-    @GetMapping("/tip")
-    public Result<List<Activity>> getActivityByTip(@RequestParam String tip){
+    //查询所有活动
+    //后台管理
+    @GetMapping("/back")
+    public Result<List<Activity>> getActivity(){
+        return activityService.getActivity();
+    }
+    //按地址查询
+    //首页默认查询
+    @GetMapping("/{address}")
+    public Result<List<Activity>> getByAddress(@PathVariable("address") String address){
 
-        Map<String,Object> objectMap = new HashMap<>();
-        objectMap.put("tip",tip);
-
-        List<Activity> list = activityMapper.selectByMap(objectMap);
-        return  Result.success(list);
+        return activityService.getByAddress(address);
     }
 
+    //按标签查询
+    @GetMapping("/{tip}")
+    public Result<List<Activity>> getByTip(@PathVariable("tip") String tip){
+        return activityService.getByTip(tip);
+    }
+
+    @GetMapping("/{theme}")
+    public Result<List<Activity>> getByTheme(@PathVariable("theme") String theme){
+        return activityService.getByTheme(theme);
+    }
+
+    // todo
+    //添加活动
     @PostMapping
-    public Result<Object> insert(@RequestBody Activity activity){
-        int success = activityMapper.insert(activity);
-        if(success == 0){
-            return Result.fail("添加失败");
-        }
-        return Result.success();
+    public Result<Object> insert(){
+        return null;
     }
 
-    @PutMapping
-    public Result<Object> updateById(@RequestBody Activity activity){
+    //后台修改
+    @PutMapping("/back")
+    public Result<Object> update(@RequestBody Activity activity){
 
-        int success = activityMapper.updateById(activity);
-        if(success == 0){
-            return Result.fail("更新失败");
-        }
-
-        return Result.success();
+        return activityService.update(activity);
     }
 
-    @DeleteMapping("/theme")
-    public Result<Object> deleteByTheme(@RequestParam String theme){
-        Map<String,Object> objectMap = new HashMap<>();
-        objectMap.put("theme",theme);
-        int success = activityMapper.deleteByMap(objectMap);
-        if(success == 0){
-            return Result.fail("删除失败");
-        }
-        return Result.success();
+    //按id删除活动
+    //后台删除
+    @DeleteMapping("/back/{id}")
+    public Result<Object> deleteById(@PathVariable("id") int id){
+
+        return activityService.deleteById(id);
     }
+
+
 }
