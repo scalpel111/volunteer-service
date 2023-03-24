@@ -4,4 +4,6 @@ public class SBLY {
     private String name;
 
     public void print(){}
+
+    public void println(){}
 }
