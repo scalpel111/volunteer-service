@@ -1,6 +1,7 @@
 package com.volunteer.service;
 
 import com.volunteer.common.Result;
+import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.Activity;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,16 +12,18 @@ public interface ActivityService extends IService<Activity> {
 
     Result<List<Activity>> getActivity();
 
-    Result<List<Activity>> getByAddress(String address);
+    Result<List<ActivityDTO>> getByAddress(String address);
 
-    Result<List<Activity>> getByTheme(String theme);
+    Result<List<ActivityDTO>> listByTheme(String theme);
 
-    Result<List<Activity>> getByTip(String tip);
+    Result<List<ActivityDTO>> getByTip(String tip);
 
     Result<Object> insert();
 
     Result<Object> update(Activity activity);
 
     Result<Object> deleteById(int id);
+
+    Result<Activity> getByTheme(String theme);
 
 }

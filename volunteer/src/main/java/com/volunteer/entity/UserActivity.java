@@ -6,14 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author 刘毅晨
- * @since 2023-03-22
- */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="UserActivity对象", description="")
@@ -21,9 +13,11 @@ public class UserActivity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer id;
+
     private Integer activityId;
 
-    private Integer userId;
+    private String openid;
 
     @ApiModelProperty(value = "0(已报名),1(未开始),2(进行中),3(已完成)")
     private Integer status;

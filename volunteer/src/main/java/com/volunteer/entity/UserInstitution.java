@@ -21,7 +21,9 @@ public class UserInstitution implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer userId;
+    private Integer id;
+
+    private String openid;
 
     private Integer institutionId;
 

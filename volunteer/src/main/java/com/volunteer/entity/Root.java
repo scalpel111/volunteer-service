@@ -28,7 +28,7 @@ public class Root implements Serializable {
 
     private String admin;
 
-    private String passowrd;
+    private String password;
 
 
 }
