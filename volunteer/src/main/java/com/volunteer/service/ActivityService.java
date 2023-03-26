@@ -17,10 +17,15 @@ public interface ActivityService extends IService<Activity> {
 
     Result<List<Activity>> getByTip(String tip);
 
-    Result<Object> insert();
+    Result<Object> insert(Activity activity);
 
     Result<Object> update(Activity activity);
 
     Result<Object> deleteById(int id);
 
+    Result<Object> ratify();
+
+    Result<Object> add(Activity activity);
+
+    Result<Object> ratifyFalse(Activity activity);
 }
