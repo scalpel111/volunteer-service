@@ -2,6 +2,7 @@ package com.volunteer.controller;
 
 
 import com.volunteer.common.Result;
+import com.volunteer.dto.UserDTO;
 import com.volunteer.entity.Institution;
 import com.volunteer.entity.UserActivity;
 import com.volunteer.service.UserActivityService;
@@ -16,6 +17,11 @@ public class UserActivityController {
 
     @Resource
     private UserActivityService userActivityService;
+
+    @GetMapping("/{activity_id}")
+    public Result<List<UserDTO>> getUserActivity(@PathVariable("activity_id") Integer id){
+        return userActivityService.getUserActivity(id);
+    }
     //后台查询
     @GetMapping("/back")
     public Result<List<UserActivity>> select(){

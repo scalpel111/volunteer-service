@@ -20,23 +20,11 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * <p>
- *  服务实现类
- * </p>
- *
- * @author 刘毅晨
- * @since 2023-03-22
- */
 @Service
 public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActivityMapper, InstitutionActivity> implements InstitutionActivityService {
 
     @Resource
     private ActivityService activityService;
-    @Resource
-    private UserActivityService userActivityService;
-    @Resource
-    private UserService userService;
 
     @Override
     public Result<List<InstitutionActivityDTO>> getInstitutionActivity(Integer id) {
@@ -54,20 +42,5 @@ public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActiv
         return Result.success(res);
     }
 
-    @Override
-    public Result<List<UserDTO>> getUserActivity(Integer id) {
-        List<UserActivity> list = userActivityService
-                .list(new QueryWrapper<UserActivity>()
-                        .eq("activity_id", id));
-        List<Integer> list1 = new ArrayList<>();
-        for (UserActivity userActivity : list) {
-            list1.add(userActivity.getUserId());
-        }
-        List<User> users = userService.listByIds(list1);
-        List<UserDTO> res = new ArrayList<>();
-        for (User user : users) {
-            res.add(new UserDTO(user.getIdentifyName(),user.getTellphone(),user.getDeclaration()));
-        }
-        return Result.success(res);
-    }
+
 }

@@ -18,7 +18,7 @@ public class RootServiceImpl extends ServiceImpl<RootMapper, Root> implements Ro
     public Result<Object> login(Root root) {
         Map<String,Object> map = new HashMap<>();
         map.put("admin",root.getAdmin());
-        map.put("password",root.getPassowrd());
+        map.put("password",root.getPassword());
         QueryWrapper<Root> queryWrapper = new QueryWrapper<>();
         queryWrapper.allEq(map);
         Root root1 = getOne(queryWrapper);
@@ -35,7 +35,7 @@ public class RootServiceImpl extends ServiceImpl<RootMapper, Root> implements Ro
         QueryWrapper<Root> queryWrapper = new QueryWrapper<>();
         queryWrapper.allEq(map);
         Root root1 = getOne(queryWrapper);
-        if(root1 == null){
+        if(root1 != null){
             return Result.fail("用户名已占用");
         }
         boolean save = save(root);

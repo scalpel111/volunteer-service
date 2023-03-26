@@ -16,7 +16,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{code}")
-    public Result<LoginDTO> login(@PathVariable("code") String code){
+    public Result<Object> login(@PathVariable("code") String code){
         return userService.login(code);
     }
 }

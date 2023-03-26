@@ -2,6 +2,7 @@ package com.volunteer.controller;
 
 
 import com.volunteer.common.Result;
+import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.Activity;
 import com.volunteer.service.ActivityService;
 import org.springframework.web.bind.annotation.*;
@@ -18,27 +19,28 @@ public class ActivityController {
 
     //查询所有活动
     //后台管理
-    @GetMapping("/back")
+    @GetMapping
     public Result<List<Activity>> getActivity(){
         return activityService.getActivity();
     }
     //按地址查询
     //首页默认查询
-    @GetMapping("/{address}")
-    public Result<List<Activity>> getByAddress(@PathVariable("address") String address){
+    @GetMapping("/address")
+    public Result<List<ActivityDTO>> getByAddress(@RequestBody String address){
 
         return activityService.getByAddress(address);
     }
 
     //按标签查询
     @GetMapping("/{tip}")
-    public Result<List<Activity>> getByTip(@PathVariable("tip") String tip){
+    public Result<List<ActivityDTO>> getByTip(@PathVariable("tip") String tip){
         return activityService.getByTip(tip);
     }
 
-    @GetMapping("/{theme}")
-    public Result<List<Activity>> getByTheme(@PathVariable("theme") String theme){
-        return activityService.getByTheme(theme);
+    //搜索框模糊查询
+    @GetMapping("/theme-like")
+    public Result<List<ActivityDTO>> listByTheme(@RequestBody String theme){
+        return activityService.listByTheme(theme);
     }
 
     // todo
@@ -49,7 +51,7 @@ public class ActivityController {
     }
 
     //后台修改
-    @PutMapping("/back")
+    @PutMapping
     public Result<Object> update(@RequestBody Activity activity){
 
         return activityService.update(activity);
@@ -57,11 +59,15 @@ public class ActivityController {
 
     //按id删除活动
     //后台删除
-    @DeleteMapping("/back/{id}")
+    @DeleteMapping("/{id}")
     public Result<Object> deleteById(@PathVariable("id") int id){
 
         return activityService.deleteById(id);
     }
 
-
+    //点击活动查看详情
+    @GetMapping("/theme")
+    public Result<Activity> getByTheme(@RequestBody String theme){
+        return activityService.getByTheme(theme);
+    }
 }

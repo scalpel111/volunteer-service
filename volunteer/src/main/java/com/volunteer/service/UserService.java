@@ -7,5 +7,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface UserService extends IService<User> {
 
-    Result<LoginDTO> login(String code);
+    Result<Object> login(String code);
 }
