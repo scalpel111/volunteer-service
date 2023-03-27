@@ -43,7 +43,6 @@ public class ActivityController {
         return activityService.listByTheme(theme);
     }
 
-    // todo
     //添加活动
     @PostMapping
     public Result<Object> insert(){
