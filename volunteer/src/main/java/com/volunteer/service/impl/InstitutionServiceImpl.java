@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
 import com.volunteer.dto.InstitutionDTO;
-import com.volunteer.entity.Activity;
 import com.volunteer.entity.Institution;
 import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.InstitutionMapper;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.volunteer.utils.RedisConstants.CACHE_ACTIVITYS_KEY;
 import static com.volunteer.utils.RedisConstants.CACHE_INSTITUTIONS_KEY;
 
 @Service
@@ -78,9 +76,9 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     public Result<Object> insert(Institution institution) {
         boolean save = save(institution);
         if(!save){
-            return Result.fail("组织审批不通过！");
+            return Result.fail("添加失败");
         }
-        return Result.success("组织审批成功，已添加至数据库！");
+        return Result.success();
     }
 
     @Override
@@ -115,5 +113,4 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
         stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, jsonString);
         return Result.fail("审批完成，已驳回！");
     }
-
 }

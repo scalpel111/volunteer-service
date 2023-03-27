@@ -1,8 +1,9 @@
 package com.volunteer.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
-import com.volunteer.entity.Institution;
 import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.UserInstitutionMapper;
 import com.volunteer.service.UserInstitutionService;
@@ -11,12 +12,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.volunteer.utils.RedisConstants.CACHE_INSTITUTIONS_KEY;
 import static com.volunteer.utils.RedisConstants.CACHE_USER_INSTITUTION_KEY;
 
 @Service
@@ -25,8 +24,20 @@ public class UserInstitutionServiceImpl extends ServiceImpl<UserInstitutionMappe
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Override
+    public Result<Object> isAdmin(String token) {
+        DecodedJWT jwt = JWTUtil.getToken(token);
+        String openid = jwt.getClaim("openid").asString();
+        UserInstitution userInstitution = query().eq("openid", openid).one();
+        if(userInstitution == null || userInstitution.getStatus() == 0){
+
+            return Result.fail("没有绑定机构");
+        }
+        return Result.success();
+    }
+
+    @Override
     public Result<Object> ratifyInsert(UserInstitution userInstitution) {
-        stringRedisTemplate.opsForZSet().add(CACHE_USER_INSTITUTION_KEY + userInstitution.getInstitutionId(), JSON.toJSONString(userInstitution.getUserId()), System.currentTimeMillis());
+        stringRedisTemplate.opsForZSet().add(CACHE_USER_INSTITUTION_KEY + userInstitution.getInstitutionId(), JSON.toJSONString(userInstitution.getOpenid()), System.currentTimeMillis());
         return Result.success("加入组织申请已提交，正在审批中！");
     }
 
@@ -52,7 +63,7 @@ public class UserInstitutionServiceImpl extends ServiceImpl<UserInstitutionMappe
 
     @Override
     public Result<Object> ratifyFalse(UserInstitution userInstitution) {
-        String jsonString = JSON.toJSONString(userInstitution.getUserId());
+        String jsonString = JSON.toJSONString(userInstitution.getOpenid());
         stringRedisTemplate.opsForZSet().remove(CACHE_USER_INSTITUTION_KEY + userInstitution.getInstitutionId(), jsonString);
         return Result.fail("审批完成，已驳回！");
     }

@@ -1,8 +1,10 @@
 package com.volunteer.controller;
 
 
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
-import com.volunteer.entity.Institution;
 import com.volunteer.entity.UserInstitution;
 import com.volunteer.service.UserInstitutionService;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,11 @@ public class UserInstitutionController {
 
     @Resource
     private UserInstitutionService userInstitutionService;
+    //查看是否是组织管理员
+    @GetMapping
+    public Result<Object> isAdmin(@RequestHeader String token){
+        return userInstitutionService.isAdmin(token);
+    }
 
     //用户找组织申请，存入redis
     @PutMapping("/ratifyInsert")

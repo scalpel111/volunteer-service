@@ -23,13 +23,12 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "user_id", type = IdType.AUTO)
-    private Integer userId;
+    private String openid;
 
-    @ApiModelProperty(value = "用户名")
+
     private String username;
 
-    private String password;
+    private String sessionkey;
 
     private String identifyId;
 

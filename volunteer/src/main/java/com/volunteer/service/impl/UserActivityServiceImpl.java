@@ -1,14 +1,19 @@
 package com.volunteer.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
-import com.volunteer.entity.Institution;
+import com.volunteer.dto.UserDTO;
+import com.volunteer.entity.User;
 import com.volunteer.entity.UserActivity;
-import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.UserActivityMapper;
 import com.volunteer.service.UserActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.volunteer.service.UserService;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +23,43 @@ import java.util.List;
 import java.util.Set;
 
 import static com.volunteer.utils.RedisConstants.CACHE_USER_ACTIVITY_KEY;
-import static com.volunteer.utils.RedisConstants.CACHE_USER_INSTITUTION_KEY;
 
 @Service
 public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, UserActivity> implements UserActivityService {
 
     @Resource
-    private StringRedisTemplate  stringRedisTemplate;
+    private UserService userService;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Override
+    public Result<List<UserDTO>> getUserActivity(Integer id) {
+        List<UserActivity> list = list(new QueryWrapper<UserActivity>()
+                        .eq("activity_id", id));
+        List<String> list1 = new ArrayList<>();
+        for (UserActivity userActivity : list) {
+            list1.add(userActivity.getOpenid());
+        }
+        List<User> users = userService.listByIds(list1);
+        List<UserDTO> res = new ArrayList<>();
+        for (User user : users) {
+            res.add(BeanUtil.copyProperties(user, UserDTO.class));
+        }
+        return Result.success(res);
+    }
+
+    @Override
+    public Result<List<UserActivity>> getUserActivity(String token) {
+        if(token == null){
+            return Result.fail("未登录");
+        }
+        DecodedJWT jwt = JWTUtil.getToken(token);
+        String openid = jwt.getClaim("openid").asString();
+        List<UserActivity> userActivities = query().eq("openid", openid).list();
+        return Result.success(userActivities);
+    }
+
     @Override
     public Result<List<UserActivity>> select() {
         List<UserActivity> list = list();
@@ -61,7 +96,7 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
 
     @Override
     public Result<Object> ratifyInsert(UserActivity userActivity) {
-        stringRedisTemplate.opsForZSet().add(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), JSON.toJSONString(userActivity.getUserId()), System.currentTimeMillis());
+        stringRedisTemplate.opsForZSet().add(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), JSON.toJSONString(userActivity.getOpenid()), System.currentTimeMillis());
         return Result.success("报名申请已提交，正在审批中！");
     }
 
@@ -82,13 +117,12 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
         if(!save){
             return Result.fail("审批不通过！");
         }
-        userActivity.setStatus(1);
         return Result.success("审批成功，已添加至数据库！");
     }
 
     @Override
     public Result<Object> ratifyFalse(UserActivity userActivity) {
-        String jsonString = JSON.toJSONString(userActivity.getUserId());
+        String jsonString = JSON.toJSONString(userActivity.getOpenid());
         stringRedisTemplate.opsForZSet().remove(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), jsonString);
         return Result.fail("审批完成，已驳回！");
     }

@@ -3,6 +3,7 @@ package com.volunteer.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
+import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.Activity;
 import com.volunteer.mapper.ActivityMapper;
 import com.volunteer.service.ActivityService;
@@ -34,41 +35,57 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     }
 
     @Override
-    public Result<List<Activity>> getByAddress(String address) {
+    public Result<List<ActivityDTO>> getByAddress(String address) {
         dateTime = LocalDateTime.now();
 
         QueryWrapper<Activity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.gt("start_time",dateTime);
-        queryWrapper.like("address",address);
+        queryWrapper.gt("start_time", dateTime);
+        queryWrapper.like("address", address);
 
         List<Activity> list = list(queryWrapper);
 
-        return Result.success(list);
+        List<ActivityDTO> res = new ArrayList<>();
+        for (Activity activity : list) {
+            res.add(new ActivityDTO(activity.getTheme(), activity.getRecruitNumber(), activity.getAddress()));
+        }
+
+        return Result.success(res);
     }
 
     @Override
-    public Result<List<Activity>> getByTheme(String theme) {
+    public Result<List<ActivityDTO>> listByTheme(String theme) {
         dateTime = LocalDateTime.now();
 
         QueryWrapper<Activity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.gt("start_time",dateTime);
-        queryWrapper.like("theme",theme);
+        queryWrapper.gt("start_time", dateTime);
+        queryWrapper.like("theme", theme);
 
         List<Activity> list = list(queryWrapper);
+        List<ActivityDTO> res = new ArrayList<>();
+        for (Activity activity : list) {
+            res.add(new ActivityDTO(activity.getTheme(), activity.getRecruitNumber(), activity.getAddress()));
+        }
 
-        return Result.success(list);
+        return Result.success(res);
     }
 
     @Override
-    public Result<List<Activity>> getByTip(String tip) {
+    public Result<List<ActivityDTO>> getByTip(String tip) {
         dateTime = LocalDateTime.now();
         QueryWrapper<Activity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.gt("start_time",dateTime);
-        if(tip != null){
+        queryWrapper.gt("start_time", dateTime);
+        if (tip != null) {
             queryWrapper.eq("tip", tip);
         }
-        return Result.success(list(queryWrapper));
+        List<Activity> list = list(queryWrapper);
+        List<ActivityDTO> res = new ArrayList<>();
+        for (Activity activity : list) {
+            res.add(new ActivityDTO(activity.getTheme(), activity.getRecruitNumber(), activity.getAddress()));
+        }
+
+        return Result.success(res);
     }
+
 
     @Override
     public Result<Object> insert(Activity activity) {
@@ -79,7 +96,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public Result<Object> update(Activity activity) {
         boolean update = update(new QueryWrapper<>(activity));
-        if(!update){
+        if (!update) {
             return Result.fail("更新失败");
         }
         return Result.success();
@@ -88,10 +105,16 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public Result<Object> deleteById(int id) {
         boolean remove = removeById(id);
-        if(!remove){
+        if (!remove) {
             return Result.fail("删除失败");
         }
         return Result.success();
+    }
+
+    @Override
+    public Result<Activity> getByTheme(String theme) {
+        Activity activity = query().eq("theme", theme).one();
+        return Result.success(activity);
     }
 
     @Override

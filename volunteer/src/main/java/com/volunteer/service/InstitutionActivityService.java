@@ -20,5 +20,4 @@ import java.util.List;
 public interface InstitutionActivityService extends IService<InstitutionActivity> {
 
     Result<List<InstitutionActivityDTO>> getInstitutionActivity(Integer id);
-    Result<List<UserDTO>> getUserActivity(Integer id);
 }

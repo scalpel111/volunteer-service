@@ -22,14 +22,11 @@ public class InstitutionActivityController {
     @Resource
     private InstitutionActivityService institutionActivityService;
 
+    //组织查看已发布的活动
     @GetMapping("/{institution_id}")
     public Result<List<InstitutionActivityDTO>> getInstitutionActivity(@PathVariable("institution_id") Integer id){
         return institutionActivityService.getInstitutionActivity(id);
     }
 
-    @GetMapping("/{activity_id}")
-    public Result<List<UserDTO>> getUserActivity(@PathVariable("activity_id") Integer id){
-        return institutionActivityService.getUserActivity(id);
-    }
 
 }

@@ -3,7 +3,6 @@ package com.volunteer.controller;
 
 import com.volunteer.common.Result;
 import com.volunteer.dto.InstitutionDTO;
-import com.volunteer.entity.Activity;
 import com.volunteer.entity.Institution;
 import com.volunteer.service.InstitutionService;
 import org.springframework.web.bind.annotation.*;
@@ -71,5 +70,4 @@ public class InstitutionController {
     public Result<Object> ratifyFalse(@RequestBody Institution institution) {
         return institutionService.ratifyFalse(institution);
     }
-
 }

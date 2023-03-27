@@ -27,4 +27,5 @@ public interface InstitutionService extends IService<Institution> {
     Result<Object> ratify();
 
     Result<Object> ratifyFalse(Institution institution);
+
 }
