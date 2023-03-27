@@ -22,4 +22,10 @@ public interface InstitutionService extends IService<Institution> {
 
     Result<Object> deleteById(int id);
 
+    Result<Object> ratifyInsert(Institution institution);
+
+    Result<Object> ratify();
+
+    Result<Object> ratifyFalse(Institution institution);
+
 }

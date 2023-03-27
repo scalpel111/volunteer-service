@@ -18,12 +18,17 @@ public interface ActivityService extends IService<Activity> {
 
     Result<List<ActivityDTO>> getByTip(String tip);
 
-    Result<Object> insert();
-
     Result<Object> update(Activity activity);
 
     Result<Object> deleteById(int id);
 
     Result<Activity> getByTheme(String theme);
 
+    Result<Object> insert(Activity activity);
+
+    Result<Object> ratify();
+
+    Result<Object> add(Activity activity);
+
+    Result<Object> ratifyFalse(Activity activity);
 }

@@ -70,4 +70,28 @@ public class ActivityController {
     public Result<Activity> getByTheme(@RequestBody String theme){
         return activityService.getByTheme(theme);
     }
+
+    //添加活动
+    @PostMapping("/ratifyInsert")
+    public Result<Object> insert(@RequestBody Activity activity){
+        return activityService.insert(activity);
+    }
+
+    //web端管理员查询全部活动申请列表
+    @GetMapping("/ratify")
+    public Result<Object> insert_back(){
+        return activityService.ratify();
+    }
+
+    //web端管理员审批活动  审批通过，加入数据库
+    @PostMapping("/ratifyOk")
+    public Result<Object> insert_back_ok(@RequestBody Activity activity) {
+        return activityService.add(activity);
+    }
+
+    //web端管理员审批活动  审批不通过，在redis里面删除
+    @DeleteMapping("/ratifyFalse")
+    public Result<Object> insert_back_false(@RequestBody Activity activity) {
+        return activityService.ratifyFalse(activity);
+    }
 }
