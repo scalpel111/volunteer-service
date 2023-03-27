@@ -31,5 +31,4 @@ public class InstitutionActivity implements Serializable {
 
     private Integer activityId;
 
-    private Integer status;
 }

@@ -1,9 +1,11 @@
 package com.volunteer.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
 import com.volunteer.dto.UserDTO;
-import com.volunteer.entity.Institution;
 import com.volunteer.entity.User;
 import com.volunteer.entity.UserActivity;
 import com.volunteer.mapper.UserActivityMapper;
@@ -21,6 +23,7 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
 
     @Resource
     private UserService userService;
+
     @Override
     public Result<List<UserDTO>> getUserActivity(Integer id) {
         List<UserActivity> list = list(new QueryWrapper<UserActivity>()
@@ -32,9 +35,20 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
         List<User> users = userService.listByIds(list1);
         List<UserDTO> res = new ArrayList<>();
         for (User user : users) {
-            res.add(new UserDTO(user.getIdentifyName(),user.getTellphone(),user.getDeclaration()));
+            res.add(BeanUtil.copyProperties(user, UserDTO.class));
         }
         return Result.success(res);
+    }
+
+    @Override
+    public Result<List<UserActivity>> getUserActivity(String token) {
+        if(token == null){
+            return Result.fail("未登录");
+        }
+        DecodedJWT jwt = JWTUtil.getToken(token);
+        String openid = jwt.getClaim("openid").asString();
+        List<UserActivity> userActivities = query().eq("openid", openid).list();
+        return Result.success(userActivities);
     }
 
     @Override

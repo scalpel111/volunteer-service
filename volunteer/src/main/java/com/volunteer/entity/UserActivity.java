@@ -19,8 +19,5 @@ public class UserActivity implements Serializable {
 
     private String openid;
 
-    @ApiModelProperty(value = "0(已报名),1(未开始),2(进行中),3(已完成)")
-    private Integer status;
-
 
 }
