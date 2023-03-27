@@ -32,7 +32,7 @@ public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActiv
         List<InstitutionActivity> list = query().eq("institution_id",id).list();
         List<Integer> list1 = new ArrayList<>();
         for (InstitutionActivity institutionActivity : list) {
-            list1.add(institutionActivity.getActivityId());
+            list1.add(institutionActivity.getId());
         }
         List<Activity> activities = activityService.listByIds(list1);
         List<InstitutionActivityDTO> res = new ArrayList<>();
