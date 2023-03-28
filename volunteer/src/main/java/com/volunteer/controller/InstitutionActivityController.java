@@ -2,9 +2,7 @@ package com.volunteer.controller;
 
 
 import com.volunteer.common.Result;
-import com.volunteer.dto.InstitutionActivityDTO;
-import com.volunteer.dto.UserDTO;
-import com.volunteer.service.ActivityService;
+import com.volunteer.dto.ActivityDTO;
 import com.volunteer.service.InstitutionActivityService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +22,7 @@ public class InstitutionActivityController {
 
     //组织查看已发布的活动
     @GetMapping("/{institution_id}")
-    public Result<List<InstitutionActivityDTO>> getInstitutionActivity(@PathVariable("institution_id") Integer id){
+    public Result<List<ActivityDTO>> getInstitutionActivity(@PathVariable("institution_id") Integer id){
         return institutionActivityService.getInstitutionActivity(id);
     }
 

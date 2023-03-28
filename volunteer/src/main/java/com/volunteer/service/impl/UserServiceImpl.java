@@ -81,4 +81,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = query().eq("openid", openid).one();
         return Result.success(user);
     }
+
+    @Override
+    public Result<Object> updateUser(User user,String token) {
+        DecodedJWT jwt = JWTUtil.getToken(token);
+        String openid = jwt.getClaim("openid").asString();
+        user.setOpenid(openid);
+        boolean update = updateById(user);
+        if(!update){
+            return Result.fail("修改失败");
+        }
+        return Result.success();
+    }
 }

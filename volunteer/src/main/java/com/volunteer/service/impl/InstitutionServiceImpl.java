@@ -35,8 +35,9 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
         for (Institution institution : institutions) {
             int number = userInstitutionService.count(new QueryWrapper<UserInstitution>()
                     .eq("institution_id",institution.getInstitutionId()));
-            InstitutionDTO institutionDTO = new InstitutionDTO(
-                    institution.getInstitutionName(),institution.getAddress(),number);
+            InstitutionDTO institutionDTO = new InstitutionDTO(institution.getInstitutionId(),
+                    institution.getInstitutionName(),institution.getAddress(),
+                    number,institution.getCount());
             institutionDTOS.add(institutionDTO);
         }
         return Result.success(institutionDTOS);

@@ -39,4 +39,10 @@ public class UserController {
     public Result<User> getPerson(@RequestHeader String token){
         return userService.getPerson(token);
     }
+
+    //修改个人资料
+    @PutMapping
+    public Result<Object> updateUser(@RequestBody User user,@RequestHeader String token){
+        return userService.updateUser(user,token);
+    }
 }

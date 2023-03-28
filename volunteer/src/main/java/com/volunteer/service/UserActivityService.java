@@ -13,7 +13,7 @@ public interface UserActivityService extends IService<UserActivity> {
 
     Result<List<UserDTO>> getUserActivity(Integer id);
 
-    Result<List<UserActivity>> getUserActivity(String  token);
+    Result<List<ActivityDTO>> getUserActivity(String  token);
 
     Result<List<UserActivity>> select();
 

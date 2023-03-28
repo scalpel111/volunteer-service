@@ -32,8 +32,8 @@ public class ActivityController {
     }
 
     //按标签查询
-    @GetMapping("/{tip}")
-    public Result<List<ActivityDTO>> getByTip(@PathVariable("tip") String tip){
+    @GetMapping("/tip")
+    public Result<List<ActivityDTO>> getByTip(@RequestBody String tip){
         return activityService.getByTip(tip);
     }
 
