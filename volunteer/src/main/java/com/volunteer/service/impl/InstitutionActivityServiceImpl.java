@@ -1,30 +1,33 @@
 package com.volunteer.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
 import com.volunteer.dto.InstitutionActivityDTO;
 import com.volunteer.dto.UserDTO;
-import com.volunteer.entity.Activity;
-import com.volunteer.entity.InstitutionActivity;
-import com.volunteer.entity.User;
-import com.volunteer.entity.UserActivity;
+import com.volunteer.entity.*;
 import com.volunteer.mapper.InstitutionActivityMapper;
 import com.volunteer.service.ActivityService;
 import com.volunteer.service.InstitutionActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.UserActivityService;
 import com.volunteer.service.UserService;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import static com.volunteer.utils.RedisConstants.CACHE_INSTITUTIONS_KEY;
 
 @Service
 public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActivityMapper, InstitutionActivity> implements InstitutionActivityService {
 
     @Resource
     private ActivityService activityService;
+
 
     @Override
     public Result<List<InstitutionActivityDTO>> getInstitutionActivity(Integer id) {
@@ -41,6 +44,5 @@ public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActiv
         }
         return Result.success(res);
     }
-
 
 }
