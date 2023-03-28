@@ -30,4 +30,6 @@ public interface UserActivityService extends IService<UserActivity> {
     Result<Object> ratifyOk(UserActivity userActivity);
 
     Result<Object> ratifyFalse(UserActivity userActivity);
+
+    Result<Object> check(String code, UserActivity userActivity);
 }

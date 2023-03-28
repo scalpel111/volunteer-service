@@ -16,4 +16,6 @@ public interface UserService extends IService<User> {
     Result<UserDTO> getHome(String token);
 
     Result<User> getPerson(String token);
+
+    Result<Object> getMessages(Long max, Integer offset);
 }

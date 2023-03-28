@@ -39,4 +39,10 @@ public class UserController {
     public Result<User> getPerson(@RequestHeader String token){
         return userService.getPerson(token);
     }
+
+    //查看消息
+    @GetMapping("/meaasge")
+    public Result<Object> getMessages(@RequestParam("lastId") Long max, @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
+        return userService.getMessages(max, offset);
+    }
 }

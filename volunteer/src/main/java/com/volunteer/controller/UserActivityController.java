@@ -71,4 +71,9 @@ public class UserActivityController {
     public Result<Object> ratifyFalse(@RequestBody UserActivity userActivity) {
         return userActivityService.ratifyFalse(userActivity);
     }
+
+    @PutMapping("/check")
+    public Result<Object> check(@RequestParam String code, @RequestBody UserActivity userActivity){
+        return userActivityService.check(code, userActivity);
+    }
 }

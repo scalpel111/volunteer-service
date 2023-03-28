@@ -43,18 +43,24 @@ public class ActivityController {
         return activityService.listByTheme(theme);
     }
 
-    //添加活动
-    @PostMapping
-    public Result<Object> insert(){
-        return null;
-    }
+//    //活动修改申请，存入redis
+//    @PostMapping("/update")
+//    public Result<Object> update(@RequestBody Activity activity){
+//        return activityService.update(activity);
+//    }
+//
+//    //web端审批活动修改申请，从redis中查看
+//    @GetMapping("/ratify_update")
+//    public Result<Object> ratifyUpdate(){
+//        return activityService.ratifyUpdate();
+//    }
+//
+//    //web端管理员审批活动修改申请  审批通过，修改数据库
+//    @PutMapping("/ratify_updateOk")
+//    public Result<Object> updateOk(@RequestBody Activity activity) {
+//        return activityService.updateOk(activity);
+//    }
 
-    //后台修改
-    @PutMapping
-    public Result<Object> update(@RequestBody Activity activity){
-
-        return activityService.update(activity);
-    }
 
     //按id删除活动
     //后台删除
