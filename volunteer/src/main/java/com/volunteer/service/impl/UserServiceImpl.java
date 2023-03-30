@@ -118,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Result<Object> getMessages(Long max, Integer offset) {
+    public Result<Object> getMessages() {
         // 1.获取当前用户
         String openid = UserHolder.getUser().getOpenid();
         // 2.查询收件箱 ZREVRANGEBYSCORE key Max Min LIMIT offset count

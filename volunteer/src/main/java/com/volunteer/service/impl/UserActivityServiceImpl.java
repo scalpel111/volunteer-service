@@ -17,6 +17,7 @@ import com.volunteer.service.UserActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.UserService;
 import com.volunteer.utils.MessageConstants;
+import com.volunteer.utils.UserHolder;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -106,8 +107,9 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
     }
 
     @Override
-    public Result<Object> ratifyInsert(UserActivity userActivity) {
-        stringRedisTemplate.opsForZSet().add(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), JSON.toJSONString(userActivity.getOpenid()), System.currentTimeMillis());
+    public Result<Object> ratifyInsert(Integer activityId) {
+        String openid = UserHolder.getUser().getOpenid();
+        stringRedisTemplate.opsForZSet().add(CACHE_USER_ACTIVITY_KEY + activityId, JSON.toJSONString(openid), System.currentTimeMillis());
         return Result.success("报名申请已提交，正在审批中！");
     }
 
@@ -147,18 +149,23 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
     }
 
     @Override
-    public Result<Object> check(String code, UserActivity userActivity) {
-        String key = CHECK_KEY + userActivity.getActivityId();
+    public Result<Object> check(String code, Integer activityId) {
+        User user = UserHolder.getUser();
+        String openid = user.getOpenid();
+        String key = CHECK_KEY + activityId;
         String codeId = stringRedisTemplate.opsForValue().get(CHECK_KEY);
         if (codeId.equals(code)) {
             //签到成功
-            Integer activityId = userActivity.getActivityId();
             Activity one = activityService.query().eq("activity_id", activityId).one();
             //计算时长
             LocalDateTime startTime = one.getStartTime();
             LocalDateTime endTime = one.getEndTime();
             Duration duration = Duration.between(startTime, endTime);
             long hours = duration.toHours();
+            Double serviceTime = user.getServiceTime();
+            //在数据库中增加字段
+            user.setServiceTime(serviceTime + hours);
+            userService.updateById(user);
             return Result.success(OK_ACTIVITY + hours);
         }
         return Result.fail(FALSE_ACTIVITY);

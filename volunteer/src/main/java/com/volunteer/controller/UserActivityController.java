@@ -50,8 +50,8 @@ public class UserActivityController {
 
     //用户报名活动，存入redis
     @PutMapping("/ratifyInsert")
-    public Result<Object> ratifyInsert(@RequestBody UserActivity userActivity){
-        return userActivityService.ratifyInsert(userActivity);
+    public Result<Object> ratifyInsert(@RequestParam Integer activityId){
+        return userActivityService.ratifyInsert(activityId);
     }
 
     //组织方管理员端进行审批，从redis中取出申请信息
@@ -72,8 +72,9 @@ public class UserActivityController {
         return userActivityService.ratifyFalse(userActivity);
     }
 
+    //用户签到
     @PutMapping("/check")
-    public Result<Object> check(@RequestParam String code, @RequestBody UserActivity userActivity){
-        return userActivityService.check(code, userActivity);
+    public Result<Object> check(@RequestParam String code, @RequestParam Integer activityId){
+        return userActivityService.check(code, activityId);
     }
 }

@@ -140,7 +140,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             String code = RandomUtil.randomNumbers(6);
             //将验证码存入到redis
             stringRedisTemplate.opsForValue().set(CHECK_KEY + activity.getActivityId(), code);
-            return Result.success("活动审批成功，已添加至数据库！");
+            return Result.success("活动审批成功，活动编码为：" + code);
         } else return Result.fail("添加失败！");
     }
 

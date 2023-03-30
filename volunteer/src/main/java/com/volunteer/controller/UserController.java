@@ -42,7 +42,7 @@ public class UserController {
 
     //查看消息
     @GetMapping("/meaasge")
-    public Result<Object> getMessages(@RequestParam("lastId") Long max, @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
-        return userService.getMessages(max, offset);
+    public Result<Object> getMessages() {
+        return userService.getMessages();
     }
 }
