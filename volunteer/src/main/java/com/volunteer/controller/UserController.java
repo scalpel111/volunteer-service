@@ -42,7 +42,12 @@ public class UserController {
 
     //修改个人资料
     @PutMapping
-    public Result<Object> updateUser(@RequestBody User user,@RequestHeader String token){
-        return userService.updateUser(user,token);
+    public Result<Object> updateUser(@RequestBody User user,@RequestHeader String token) {
+        return userService.updateUser(user, token);
+    }
+    //查看消息
+    @GetMapping("/message")
+    public Result<Object> getMessages() {
+        return userService.getMessages();
     }
 }

@@ -1,6 +1,7 @@
 package com.volunteer.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONObject;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -12,16 +13,21 @@ import com.volunteer.entity.User;
 import com.volunteer.mapper.UserMapper;
 import com.volunteer.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.volunteer.utils.UserHolder;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static com.volunteer.utils.RedisConstants.*;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     @Override
     public Result<Object> login(String code) {
 
@@ -30,18 +36,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String sessionKey = sessionKeyOrOpenId.get("sessionkey",String.class);
 
         User user = getOne(new QueryWrapper<User>().eq("openid",openId));
+        // 保存用户信息到 redis中
+        // 生成token，作为登录令牌
+        Map<String,String> map = new HashMap<>();
+        map.put("openid",openId);
+        String token = JWTUtil.getToken(map);
         if(user == null){
             User user1 = new User();
             user1.setOpenid(openId);
             user1.setUsername(openId + sessionKey);
             user1.setSessionkey(sessionKey);
             save(user1);
-        }
-        Map<String,String> map = new HashMap<>();
-        map.put("openid",openId);
 
-        String token = JWTUtil.getToken(map);
+            // 将User对象转为HashMap存储
+            UserDTO userDTO1 = BeanUtil.copyProperties(user1, UserDTO.class);
+            Map<String, Object> userMap = BeanUtil.beanToMap(userDTO1, new HashMap<>(),
+            CopyOptions.create()
+                    .setIgnoreNullValue(true)
+                    .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
+            // 存储
+            String tokenKey1 = LOGIN_USER_KEY + token;
+            stringRedisTemplate.opsForHash().putAll(tokenKey1, userMap);
+            // 设置token有效期
+            stringRedisTemplate.expire(tokenKey1, LOGIN_USER_TTL, TimeUnit.MINUTES);
+            return Result.success(token);
+        }
+        // 将User对象转为HashMap存储
+        UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
+                CopyOptions.create()
+                        .setIgnoreNullValue(true)
+                        .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
+        // 存储
+        String tokenKey = LOGIN_USER_KEY + token;
+        stringRedisTemplate.opsForHash().putAll(tokenKey, userMap);
+        // 设置token有效期
+        stringRedisTemplate.expire(tokenKey, LOGIN_USER_TTL, TimeUnit.MINUTES);
         return Result.success(token);
+
     }
 
     @Override
@@ -92,5 +124,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.fail("修改失败");
         }
         return Result.success();
+    }
+
+    public Result<Object> getMessages() {
+        // 1.获取当前用户
+        String openid = UserHolder.getUser().getOpenid();
+        // 2.查询收件箱 ZREVRANGEBYSCORE key Max Min LIMIT offset count
+        String key = USER_MESSAGE_KEY + openid;
+        Set<String> strings = stringRedisTemplate.opsForZSet().reverseRangeByScore(key, 0l, Long.MAX_VALUE);
+        // 3.非空判断
+        if (strings == null || strings.isEmpty()) {
+            return Result.success();
+        }
+        // 4.传集合
+        List<String> messages = new ArrayList<>();
+        for (String message : strings) {
+            messages.add(message);
+        }
+        return Result.success(messages);
     }
 }

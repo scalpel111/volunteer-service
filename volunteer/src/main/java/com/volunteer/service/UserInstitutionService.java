@@ -8,7 +8,7 @@ public interface UserInstitutionService extends IService<UserInstitution> {
 
     Result<Object> isAdmin(String token);
 
-    Result<Object> ratifyInsert(UserInstitution userInstitution);
+    Result<Object> ratifyInsert(Integer institutionId);
 
     Result<Object> ratify(Integer institutionId);
 

@@ -22,11 +22,13 @@ public interface UserActivityService extends IService<UserActivity> {
 
     Result<Object> deleteById(int id);
 
-    Result<Object> ratifyInsert(UserActivity userActivity);
+    Result<Object> ratifyInsert(Integer activityId);
 
     Result<Object> ratify(Integer activityId);
 
     Result<Object> ratifyOk(UserActivity userActivity);
 
     Result<Object> ratifyFalse(UserActivity userActivity);
+
+    Result<Object> check(String code, Integer activityId);
 }

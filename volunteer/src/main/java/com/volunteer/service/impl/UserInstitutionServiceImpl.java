@@ -8,6 +8,7 @@ import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.UserInstitutionMapper;
 import com.volunteer.service.UserInstitutionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.volunteer.utils.UserHolder;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +37,9 @@ public class UserInstitutionServiceImpl extends ServiceImpl<UserInstitutionMappe
     }
 
     @Override
-    public Result<Object> ratifyInsert(UserInstitution userInstitution) {
-        stringRedisTemplate.opsForZSet().add(CACHE_USER_INSTITUTION_KEY + userInstitution.getInstitutionId(), JSON.toJSONString(userInstitution.getOpenid()), System.currentTimeMillis());
+    public Result<Object> ratifyInsert(Integer institutionId) {
+        String openid = UserHolder.getUser().getOpenid();
+        stringRedisTemplate.opsForZSet().add(CACHE_USER_INSTITUTION_KEY + institutionId, JSON.toJSONString(openid), System.currentTimeMillis());
         return Result.success("加入组织申请已提交，正在审批中！");
     }
 
@@ -54,6 +56,7 @@ public class UserInstitutionServiceImpl extends ServiceImpl<UserInstitutionMappe
 
     @Override
     public Result<Object> ratifyOk(UserInstitution userInstitution) {
+        userInstitution.setStatus(0);
         boolean save = save(userInstitution);
         if(!save){
             return Result.fail("加入组织审批不通过！");

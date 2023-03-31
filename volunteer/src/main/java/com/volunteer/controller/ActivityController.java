@@ -43,20 +43,6 @@ public class ActivityController {
         return activityService.listByTheme(theme);
     }
 
-    // todo
-    //添加活动
-    @PostMapping
-    public Result<Object> insert(){
-        return null;
-    }
-
-    //后台修改
-    @PutMapping
-    public Result<Object> update(@RequestBody Activity activity){
-
-        return activityService.update(activity);
-    }
-
     //按id删除活动
     //后台删除
     @DeleteMapping("/{id}")

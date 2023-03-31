@@ -1,9 +1,6 @@
 package com.volunteer.controller;
 
 
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
 import com.volunteer.entity.UserInstitution;
 import com.volunteer.service.UserInstitutionService;
@@ -25,8 +22,8 @@ public class UserInstitutionController {
 
     //用户找组织申请，存入redis
     @PutMapping("/ratifyInsert")
-    public Result<Object> ratifyInsert(@RequestBody UserInstitution userInstitution){
-        return userInstitutionService.ratifyInsert(userInstitution);
+    public Result<Object> ratifyInsert(@RequestParam Integer institutionId){
+        return userInstitutionService.ratifyInsert(institutionId);
     }
 
     //组织方管理员端进行审批，从redis中取出申请信息

@@ -17,5 +17,9 @@ public interface UserService extends IService<User> {
 
     Result<User> getPerson(String token);
 
+
     Result<Object> updateUser(User user,String token);
+
+    Result<Object> getMessages();
+
 }

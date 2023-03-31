@@ -16,16 +16,21 @@ import com.volunteer.service.ActivityService;
 import com.volunteer.service.UserActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.UserService;
+import com.volunteer.utils.MessageConstants;
+import com.volunteer.utils.UserHolder;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.volunteer.utils.RedisConstants.CACHE_USER_ACTIVITY_KEY;
+import static com.volunteer.utils.MessageConstants.FALSE_ACTIVITY;
+import static com.volunteer.utils.MessageConstants.OK_ACTIVITY;
+import static com.volunteer.utils.RedisConstants.*;
 
 @Service
 public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, UserActivity> implements UserActivityService {
@@ -113,8 +118,9 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
     }
 
     @Override
-    public Result<Object> ratifyInsert(UserActivity userActivity) {
-        stringRedisTemplate.opsForZSet().add(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), JSON.toJSONString(userActivity.getOpenid()), System.currentTimeMillis());
+    public Result<Object> ratifyInsert(Integer activityId) {
+        String openid = UserHolder.getUser().getOpenid();
+        stringRedisTemplate.opsForZSet().add(CACHE_USER_ACTIVITY_KEY + activityId, JSON.toJSONString(openid), System.currentTimeMillis());
         return Result.success("报名申请已提交，正在审批中！");
     }
 
@@ -135,6 +141,13 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
         if(!save){
             return Result.fail("审批不通过！");
         }
+        String s = JSON.toJSONString(userActivity.getOpenid());
+        //审批通过从redis之中移除数据
+        stringRedisTemplate.opsForZSet().remove(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), s);
+        //在redis之中记录通过的所有用户，方便最后统一推送消息
+        stringRedisTemplate.opsForZSet().add(ACTIVITY_USER_KEY + userActivity.getActivityId(), s, System.currentTimeMillis());
+        //给用户发送通知审批通过
+        stringRedisTemplate.opsForZSet().add(USER_MESSAGE_KEY + userActivity.getOpenid(), MessageConstants.OK_MESSAGE, System.currentTimeMillis());
         return Result.success("审批成功，已添加至数据库！");
     }
 
@@ -142,6 +155,30 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
     public Result<Object> ratifyFalse(UserActivity userActivity) {
         String jsonString = JSON.toJSONString(userActivity.getOpenid());
         stringRedisTemplate.opsForZSet().remove(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), jsonString);
+        stringRedisTemplate.opsForZSet().add(USER_MESSAGE_KEY + userActivity.getOpenid(), MessageConstants.FALSE_MESSAGE, System.currentTimeMillis());
         return Result.fail("审批完成，已驳回！");
+    }
+
+    @Override
+    public Result<Object> check(String code, Integer activityId) {
+        User user = UserHolder.getUser();
+        String openid = user.getOpenid();
+        String key = CHECK_KEY + activityId;
+        String codeId = stringRedisTemplate.opsForValue().get(CHECK_KEY);
+        if (codeId.equals(code)) {
+            //签到成功
+            Activity one = activityService.query().eq("activity_id", activityId).one();
+            //计算时长
+            LocalDateTime startTime = one.getStartTime();
+            LocalDateTime endTime = one.getEndTime();
+            Duration duration = Duration.between(startTime, endTime);
+            long hours = duration.toHours();
+            Double serviceTime = user.getServiceTime();
+            //在数据库中增加字段
+            user.setServiceTime(serviceTime + hours);
+            userService.updateById(user);
+            return Result.success(OK_ACTIVITY + hours);
+        }
+        return Result.fail(FALSE_ACTIVITY);
     }
 }

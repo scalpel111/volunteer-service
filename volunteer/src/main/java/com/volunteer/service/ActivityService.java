@@ -30,4 +30,8 @@ public interface ActivityService extends IService<Activity> {
     Result<Object> add(Activity activity);
 
     Result<Object> ratifyFalse(Activity activity);
+
+    Result<Object> ratifyUpdate();
+
+//    Result<Object> updateOk(Activity activity);
 }
