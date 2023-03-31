@@ -1,5 +1,6 @@
 package com.volunteer.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
@@ -46,7 +47,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
         List<ActivityDTO> res = new ArrayList<>();
         for (Activity activity : list) {
-            res.add(new ActivityDTO(activity.getTheme(), activity.getRecruitNumber(), activity.getAddress()));
+            res.add(BeanUtil.copyProperties(activity,ActivityDTO.class));
         }
 
         return Result.success(res);
@@ -63,7 +64,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         List<Activity> list = list(queryWrapper);
         List<ActivityDTO> res = new ArrayList<>();
         for (Activity activity : list) {
-            res.add(new ActivityDTO(activity.getTheme(), activity.getRecruitNumber(), activity.getAddress()));
+            res.add(BeanUtil.copyProperties(activity,ActivityDTO.class));
         }
 
         return Result.success(res);
@@ -80,7 +81,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         List<Activity> list = list(queryWrapper);
         List<ActivityDTO> res = new ArrayList<>();
         for (Activity activity : list) {
-            res.add(new ActivityDTO(activity.getTheme(), activity.getRecruitNumber(), activity.getAddress()));
+            res.add(BeanUtil.copyProperties(activity,ActivityDTO.class));
         }
 
         return Result.success(res);

@@ -4,7 +4,6 @@ import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.Activity;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

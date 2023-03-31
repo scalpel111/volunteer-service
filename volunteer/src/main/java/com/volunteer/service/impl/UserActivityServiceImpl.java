@@ -6,19 +6,22 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
+import com.volunteer.dto.ActivityDTO;
 import com.volunteer.dto.UserDTO;
+import com.volunteer.entity.Activity;
 import com.volunteer.entity.User;
 import com.volunteer.entity.UserActivity;
 import com.volunteer.mapper.UserActivityMapper;
+import com.volunteer.service.ActivityService;
 import com.volunteer.service.UserActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.UserService;
-import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,6 +32,8 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
 
     @Resource
     private UserService userService;
+    @Resource
+    private ActivityService activityService;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -50,14 +55,27 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
     }
 
     @Override
-    public Result<List<UserActivity>> getUserActivity(String token) {
+    public Result<List<ActivityDTO>> getUserActivity(String token) {
         if(token == null){
             return Result.fail("未登录");
         }
         DecodedJWT jwt = JWTUtil.getToken(token);
         String openid = jwt.getClaim("openid").asString();
-        List<UserActivity> userActivities = query().eq("openid", openid).list();
-        return Result.success(userActivities);
+        List<UserActivity> list = query().eq("openid", openid).list();
+        Set<Integer> set = new HashSet<>();
+        for (UserActivity userActivity : list) {
+            set.add(userActivity.getActivityId());
+        }
+        List<Integer> ids = new ArrayList<>();
+        for (Integer id1 : set) {
+            ids.add(id1);
+        }
+        List<Activity> institutionActivities = activityService.listByIds(ids);
+        List<ActivityDTO> res = new ArrayList<>();
+        for (Activity activity : institutionActivities) {
+            res.add(BeanUtil.copyProperties(activity,ActivityDTO.class));
+        }
+        return Result.success(res);
     }
 
     @Override

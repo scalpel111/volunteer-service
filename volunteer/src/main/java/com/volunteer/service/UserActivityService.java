@@ -3,7 +3,6 @@ package com.volunteer.service;
 import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
 import com.volunteer.dto.UserDTO;
-import com.volunteer.entity.Institution;
 import com.volunteer.entity.UserActivity;
 import com.baomidou.mybatisplus.extension.service.IService;
 

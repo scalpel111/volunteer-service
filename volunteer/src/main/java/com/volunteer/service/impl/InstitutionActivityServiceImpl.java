@@ -1,26 +1,20 @@
 package com.volunteer.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.core.bean.BeanUtil;
 import com.volunteer.common.Result;
-import com.volunteer.dto.InstitutionActivityDTO;
-import com.volunteer.dto.UserDTO;
+import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.*;
 import com.volunteer.mapper.InstitutionActivityMapper;
 import com.volunteer.service.ActivityService;
 import com.volunteer.service.InstitutionActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.volunteer.service.UserActivityService;
-import com.volunteer.service.UserService;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static com.volunteer.utils.RedisConstants.CACHE_INSTITUTIONS_KEY;
 
 @Service
 public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActivityMapper, InstitutionActivity> implements InstitutionActivityService {
@@ -30,17 +24,21 @@ public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActiv
 
 
     @Override
-    public Result<List<InstitutionActivityDTO>> getInstitutionActivity(Integer id) {
+    public Result<List<ActivityDTO>> getInstitutionActivity(Integer id) {
 
         List<InstitutionActivity> list = query().eq("institution_id",id).list();
-        List<Integer> list1 = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
         for (InstitutionActivity institutionActivity : list) {
-            list1.add(institutionActivity.getId());
+            set.add(institutionActivity.getActivityId());
         }
-        List<Activity> activities = activityService.listByIds(list1);
-        List<InstitutionActivityDTO> res = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            res.add(new InstitutionActivityDTO(activities.get(i).getTheme(),list.get(i)));
+        List<Integer> ids = new ArrayList<>();
+        for (Integer id1 : set) {
+            ids.add(id1);
+        }
+        List<Activity> institutionActivities = activityService.listByIds(ids);
+        List<ActivityDTO> res = new ArrayList<>();
+        for (Activity activity : institutionActivities) {
+            res.add(BeanUtil.copyProperties(activity,ActivityDTO.class));
         }
         return Result.success(res);
     }
