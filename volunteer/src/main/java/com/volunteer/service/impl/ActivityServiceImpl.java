@@ -135,6 +135,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     public Result<Object> add(Activity activity) {
         boolean save = save(activity);
         if (save) {
+            activity.setActivityId(null);
             stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, JSON.toJSONString(activity));
             //生成一个活动的验证码
             String code = RandomUtil.randomNumbers(6);

@@ -5,10 +5,17 @@ import com.volunteer.common.Result;
 import com.volunteer.dto.InstitutionDTO;
 import com.volunteer.entity.Institution;
 import com.volunteer.service.InstitutionService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/institution")
@@ -16,6 +23,9 @@ public class InstitutionController {
 
     @Resource
     private InstitutionService institutionService;
+
+    @Value("${file.save.path}")
+    String fileSavePath;
 
     //找组织全部查询
     @GetMapping
@@ -70,4 +80,14 @@ public class InstitutionController {
     public Result<Object> ratifyFalse(@RequestBody Institution institution) {
         return institutionService.ratifyFalse(institution);
     }
+
+    //文件保存在磁盘的地址
+    @RequestMapping("upImgs")
+    public Result<Object> upImgs(HttpServletRequest request,
+                         @RequestParam("file") MultipartFile myfile,
+                         @RequestParam("desc") String desc) throws IOException {
+        return institutionService.upImgs(request, myfile, desc);
+    }
+
+
 }

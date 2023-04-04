@@ -5,6 +5,8 @@ import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.Activity;
 import com.volunteer.service.ActivityService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

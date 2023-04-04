@@ -7,7 +7,32 @@ spring:
     password: 111111
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 111111
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        time-between-eviction-runs: 10s
+  mvc:
+    static-path-pattern: /imges/**
+  web:
+    resources:
+      static-locations: file:E:\volunteer_service
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+
 
 mybatis-plus:
   type-aliases-package: com.volunteer.entity
 #  mapper-locations: classpath:mapper/*.xml
+
+file:
+  save:
+    path: E:/volunteer_service

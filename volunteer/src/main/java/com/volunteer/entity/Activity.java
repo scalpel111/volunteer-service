@@ -23,8 +23,10 @@ public class Activity implements Serializable {
 
     private String theme;
 
+//    @TableId(value = "start_time")
     private LocalDateTime startTime;
 
+//    @TableId(value = "end_time")
     private LocalDateTime endTime;
 
     private String address;
