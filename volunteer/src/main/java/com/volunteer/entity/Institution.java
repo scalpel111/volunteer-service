@@ -35,7 +35,7 @@ public class Institution implements Serializable {
 
     private String tellphone;
 
-    private Blob proof;
+    private String proof;
 
     private Integer count;
 

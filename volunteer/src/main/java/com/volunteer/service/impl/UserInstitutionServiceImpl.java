@@ -61,6 +61,10 @@ public class UserInstitutionServiceImpl extends ServiceImpl<UserInstitutionMappe
         if(!save){
             return Result.fail("加入组织审批不通过！");
         }
+        userInstitution.setId(null);
+        stringRedisTemplate.opsForZSet()
+                .remove(CACHE_USER_INSTITUTION_KEY + userInstitution.getInstitutionId(),
+                        JSON.toJSONString(userInstitution.getOpenid()));
         return Result.success("加入组织审批成功，已添加至数据库！");
     }
 

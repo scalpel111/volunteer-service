@@ -1,5 +1,6 @@
 package com.volunteer.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
@@ -11,15 +12,21 @@ import com.volunteer.service.InstitutionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.UserInstitutionService;
 import io.swagger.models.auth.In;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-import static com.volunteer.utils.RedisConstants.CACHE_INSTITUTIONS_KEY;
+import static com.volunteer.utils.RedisConstants.*;
 
 @Service
 public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Institution> implements InstitutionService {
@@ -29,6 +36,9 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Value("${file.save.path}")
+    private String fileSavePath;
 
     public Result<List<InstitutionDTO>> wrap(List<Institution> institutions){
         List<InstitutionDTO> institutionDTOS = new ArrayList<>();
@@ -76,10 +86,11 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     @Override
     public Result<Object> insert(Institution institution) {
         boolean save = save(institution);
-        if(!save){
-            return Result.fail("添加失败");
-        }
-        return Result.success();
+        institution.setInstitutionId(null);
+        stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, JSON.toJSONString(institution));
+        if (save) {
+            return Result.success("组织入驻成功！");
+        } else return Result.fail("组织入驻失败！");
     }
 
     @Override
@@ -113,5 +124,27 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
         String jsonString = JSON.toJSONString(institution);
         stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, jsonString);
         return Result.fail("审批完成，已驳回！");
+    }
+
+    @Override
+    public Result<Object> upImgs(HttpServletRequest request, MultipartFile myfile, String desc) throws IOException {
+        File fir=new File(fileSavePath);
+        //不存在则创建文件夹
+        if(!fir.exists()){
+            fir.mkdirs();
+        }
+        //文件的后缀名
+        String suffix=myfile.getOriginalFilename().substring(myfile.getOriginalFilename().lastIndexOf("."));
+        //新文件名字 为了防止重复加上UUID
+        String newFileName= UUID.randomUUID().toString().replaceAll("-","")+suffix;
+        System.out.println("filesavepath:"+fileSavePath+"   "+"newFileName:"+newFileName);
+        //新的文件路径
+        File newFile=new File(fileSavePath+newFileName);
+        //把文件写入新的File文件
+        myfile.transferTo(newFile);
+        //url路径=http + :// + server名字 + port端口 + /imges/ + newFileName
+        String url=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+"/images/"+newFileName;
+        return Result.success(url);
+
     }
 }

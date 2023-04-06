@@ -143,6 +143,7 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
         }
         String s = JSON.toJSONString(userActivity.getOpenid());
         //审批通过从redis之中移除数据
+        userActivity.setId(null);
         stringRedisTemplate.opsForZSet().remove(CACHE_USER_ACTIVITY_KEY + userActivity.getActivityId(), s);
         //在redis之中记录通过的所有用户，方便最后统一推送消息
         stringRedisTemplate.opsForZSet().add(ACTIVITY_USER_KEY + userActivity.getActivityId(), s, System.currentTimeMillis());
