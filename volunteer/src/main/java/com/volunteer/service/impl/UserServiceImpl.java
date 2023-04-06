@@ -3,7 +3,6 @@ package com.volunteer.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONObject;
-import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.JWTUtil;
@@ -11,19 +10,15 @@ import com.volunteer.common.Result;
 import com.volunteer.common.WechatUtil;
 import com.volunteer.dto.UserDTO;
 import com.volunteer.entity.User;
-import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.UserMapper;
 import com.volunteer.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.utils.UserHolder;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 import static com.volunteer.utils.RedisConstants.*;
 
 @Service
