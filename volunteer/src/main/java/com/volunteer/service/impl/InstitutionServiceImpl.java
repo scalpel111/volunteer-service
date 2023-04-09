@@ -1,5 +1,6 @@
 package com.volunteer.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
@@ -107,6 +108,12 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     }
 
     @Override
+    public Result<Institution> getInto(String name) {
+        Institution institution = query().eq("institution_name", name).one();
+        return Result.success(institution);
+    }
+
+    @Override
     public Result<Object> ratify() {
         Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_INSTITUTIONS_KEY, 0l, Long.MAX_VALUE);
         List<Institution> institutions = new ArrayList<>();
@@ -125,23 +132,23 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     }
 
     @Override
-    public Result<Object> upImgs(HttpServletRequest request, MultipartFile myfile, String desc) throws IOException {
+    public Result<Object> upImgs(MultipartFile file) throws IOException {
         File fir=new File(fileSavePath);
         //不存在则创建文件夹
         if(!fir.exists()){
             fir.mkdirs();
         }
         //文件的后缀名
-        String suffix=myfile.getOriginalFilename().substring(myfile.getOriginalFilename().lastIndexOf("."));
+        String suffix=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         //新文件名字 为了防止重复加上UUID
         String newFileName= UUID.randomUUID().toString().replaceAll("-","")+suffix;
         System.out.println("filesavepath:"+fileSavePath+"   "+"newFileName:"+newFileName);
         //新的文件路径
         File newFile=new File(fileSavePath+newFileName);
         //把文件写入新的File文件
-        myfile.transferTo(newFile);
+        file.transferTo(newFile);
         //url路径=http + :// + server名字 + port端口 + /imges/ + newFileName
-        String url=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+"/images/"+newFileName;
+        String url = "http://localhost:8090/images/"+newFileName;
         return Result.success(url);
 
     }

@@ -1,13 +1,20 @@
 package com.volunteer.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
+import com.volunteer.dto.InstitutionDTO;
+import com.volunteer.dto.UserDTO;
+import com.volunteer.entity.Institution;
+import com.volunteer.entity.User;
 import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.UserInstitutionMapper;
+import com.volunteer.service.InstitutionService;
 import com.volunteer.service.UserInstitutionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.volunteer.service.UserService;
 import com.volunteer.utils.UserHolder;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -24,6 +31,10 @@ public class UserInstitutionServiceImpl extends ServiceImpl<UserInstitutionMappe
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private InstitutionService institutionService;
+    @Resource
+    private UserService userService;
     @Override
     public Result<Object> isAdmin(String token) {
         DecodedJWT jwt = JWTUtil.getToken(token);
@@ -36,6 +47,33 @@ public class UserInstitutionServiceImpl extends ServiceImpl<UserInstitutionMappe
         return Result.success();
     }
 
+    @Override
+    public Result<InstitutionDTO> getInstitution(String token) {
+        DecodedJWT jwt = JWTUtil.getToken(token);
+        String openid = jwt.getClaim("openid").asString();
+        UserInstitution userInstitution = query().eq("openid", openid).eq("status", 1).one();
+        if(userInstitution == null){
+            return Result.fail("您还没有管理的组织");
+        }
+        Institution institution = institutionService.getById(userInstitution.getInstitutionId());
+        return Result.success(new InstitutionDTO(institution.getInstitutionId(),institution.getInstitutionName(),
+                institution.getAddress(), null,institution.getCount()));
+    }
+
+    @Override
+    public Result<List<UserDTO>> getUserByInstitutionId(Integer id) {
+        List<UserInstitution> list = query().eq("institution_id", id).list();
+        List<String> openids = new ArrayList<>();
+        for (UserInstitution userInstitution : list) {
+            openids.add(userInstitution.getOpenid());
+        }
+        List<User> users = userService.listByIds(openids);
+        List<UserDTO> res = new ArrayList<>();
+        for (User user : users) {
+            res.add(BeanUtil.copyProperties(user,UserDTO.class));
+        }
+        return Result.success(res);
+    }
     @Override
     public Result<Object> ratifyInsert(Integer institutionId) {
         String openid = UserHolder.getUser().getOpenid();

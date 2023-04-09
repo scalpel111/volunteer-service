@@ -25,9 +25,11 @@ public interface InstitutionService extends IService<Institution> {
 
     Result<Object> ratifyInsert(Institution institution);
 
+    Result<Institution> getInto(String name);
+
     Result<Object> ratify();
 
     Result<Object> ratifyFalse(Institution institution);
 
-    Result<Object> upImgs(HttpServletRequest request, MultipartFile myfile, String desc) throws IOException;
+    Result<Object> upImgs(MultipartFile file) throws IOException;
 }

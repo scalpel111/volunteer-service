@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url(../imgs/volunteer-service.jpg) no-repeat 0px 0px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+}
+
+.box {
+    width: 500px;
+    height: 350px;
+    margin-bottom: 100px;
+    border: 1px solid rgb(169, 167, 167);
+    box-shadow: 0 0  10px rgb(53, 52, 52);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.el-input {
+    width: 300px;
+}
+.el-input__inner {
+    height: 40px;
+    line-height: 40px;
+}
+.btn {
+    text-align: center;
+    margin-top: 10px;
+} 
+
+.bt {
+    text-align: center;
+    margin-top: 10px;
+} 
+
+.p {
+    text-align: center;
+} 

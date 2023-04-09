@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
   datasource:
@@ -10,7 +10,7 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    password: 111111
+    #password: 111111
     lettuce:
       pool:
         max-active: 8
@@ -18,14 +18,17 @@ spring:
         min-idle: 0
         time-between-eviction-runs: 10s
   mvc:
-    static-path-pattern: /imges/**
-  web:
-    resources:
-      static-locations: file:E:\volunteer_service
+    static-path-pattern: /**
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  #  web:
+#    resources:
+#      static-locations: D:\IdeaProjects\volunteer-service\volunteer\target\classes\images
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+
 
 
 
@@ -35,4 +38,4 @@ mybatis-plus:
 
 file:
   save:
-    path: E:/volunteer_service
+    path: D:\IdeaProjects\volunteer-service\volunteer\src\main\resources\static\images\

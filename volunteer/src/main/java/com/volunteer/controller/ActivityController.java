@@ -28,20 +28,20 @@ public class ActivityController {
     //按地址查询
     //首页默认查询
     @GetMapping("/address")
-    public Result<List<ActivityDTO>> getByAddress(@RequestBody String address){
+    public Result<List<ActivityDTO>> getByAddress(String address){
 
         return activityService.getByAddress(address);
     }
 
     //按标签查询
     @GetMapping("/tip")
-    public Result<List<ActivityDTO>> getByTip(@RequestBody String tip){
+    public Result<List<ActivityDTO>> getByTip(String tip){
         return activityService.getByTip(tip);
     }
 
     //搜索框模糊查询
     @GetMapping("/theme-like")
-    public Result<List<ActivityDTO>> listByTheme(@RequestBody String theme){
+    public Result<List<ActivityDTO>> listByTheme(String theme){
         return activityService.listByTheme(theme);
     }
 
@@ -55,7 +55,7 @@ public class ActivityController {
 
     //点击活动查看详情
     @GetMapping("/theme")
-    public Result<Activity> getByTheme(@RequestBody String theme){
+    public Result<Activity> getByTheme(String theme){
         return activityService.getByTheme(theme);
     }
 

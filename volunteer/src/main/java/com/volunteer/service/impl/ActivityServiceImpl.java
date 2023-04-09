@@ -10,6 +10,7 @@ import com.volunteer.entity.Activity;
 import com.volunteer.mapper.ActivityMapper;
 import com.volunteer.service.ActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.volunteer.service.InstitutionActivityService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
@@ -28,6 +29,9 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private InstitutionActivityService institutionActivityService;
 
     @Override
     public Result<List<Activity>> getActivity() {
@@ -134,6 +138,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     public Result<Object> add(Activity activity) {
         boolean save = save(activity);
         if (save) {
+
             activity.setActivityId(null);
             stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, JSON.toJSONString(activity));
             //生成一个活动的验证码
