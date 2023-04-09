@@ -108,8 +108,8 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     }
 
     @Override
-    public Result<Institution> getInto(String name) {
-        Institution institution = query().eq("institution_name", name).one();
+    public Result<Institution> getInto(Integer id) {
+        Institution institution = query().eq("institution_id",id).one();
         return Result.success(institution);
     }
 

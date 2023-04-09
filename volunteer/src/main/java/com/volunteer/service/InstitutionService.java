@@ -25,7 +25,7 @@ public interface InstitutionService extends IService<Institution> {
 
     Result<Object> ratifyInsert(Institution institution);
 
-    Result<Institution> getInto(String name);
+    Result<Institution> getInto(Integer id);
 
     Result<Object> ratify();
 

@@ -40,27 +40,9 @@ public class InstitutionController {
     }
 
     //进入组织页面
-    @GetMapping("/into")
-    public Result<Institution> getInto(String name){
-        return institutionService.getInto(name);
-    }
-
-    //后台查询
-    @GetMapping("/back")
-    public Result<List<Institution>> select() {
-        return institutionService.select();
-    }
-
-    //后台修改
-    @PostMapping("/back")
-    public Result<Object> update(@RequestBody Institution institution) {
-        return institutionService.updateInstitution(institution);
-    }
-
-    //后台删除
-    @DeleteMapping("/back/{id}")
-    public Result<Object> deleteById(@PathVariable("id") int id) {
-        return institutionService.deleteById(id);
+    @GetMapping("/into/{id}")
+    public Result<Institution> getInto(@PathVariable("id") Integer id){
+        return institutionService.getInto(id);
     }
 
     //组织申请，存入redis
