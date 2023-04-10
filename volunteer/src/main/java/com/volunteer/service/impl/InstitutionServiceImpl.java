@@ -2,16 +2,20 @@ package com.volunteer.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
 import com.volunteer.dto.InstitutionDTO;
 import com.volunteer.entity.Institution;
+import com.volunteer.entity.User;
 import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.InstitutionMapper;
 import com.volunteer.mapper.UserInstitutionMapper;
 import com.volunteer.service.InstitutionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.UserInstitutionService;
+import com.volunteer.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,9 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private UserService userService;
 
     @Value("${file.save.path}")
     private String fileSavePath;
@@ -84,11 +91,21 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     }
 
     @Override
-    public Result<Object> insert(Institution institution) {
+    public Result<Object> insert(Institution institution, String token) {
         boolean save = save(institution);
         institution.setInstitutionId(null);
         stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, JSON.toJSONString(institution));
         if (save) {
+            DecodedJWT jwt = JWTUtil.getToken(token);
+            String openid = jwt.getClaim("openid").asString();
+            User user = userService.query().eq("openid", openid).one();
+            if (user != null) {
+                UserInstitution userInstitution = new UserInstitution();
+                userInstitution.setInstitutionId(institution.getInstitutionId());
+                userInstitution.setOpenid(user.getOpenid());
+                userInstitution.setStatus(1);
+                userInstitutionMapper.insert(userInstitution);
+            }
             return Result.success("组织入驻成功！");
         } else return Result.fail("组织入驻失败！");
     }

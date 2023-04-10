@@ -41,6 +41,9 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
     private ActivityService activityService;
 
     @Resource
+    private UserActivityService userActivityService;
+
+    @Resource
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
@@ -141,6 +144,7 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
         if(!save){
             return Result.fail("审批不通过！");
         }
+        //在用户-活动连接表中进行数据插入
         String s = JSON.toJSONString(userActivity.getOpenid());
         //审批通过从redis之中移除数据
         userActivity.setId(null);

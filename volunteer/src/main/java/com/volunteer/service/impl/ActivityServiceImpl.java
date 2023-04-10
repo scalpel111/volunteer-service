@@ -7,18 +7,19 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.Activity;
+import com.volunteer.entity.InstitutionActivity;
 import com.volunteer.mapper.ActivityMapper;
+import com.volunteer.mapper.InstitutionActivityMapper;
 import com.volunteer.service.ActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.volunteer.service.InstitutionActivityService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.volunteer.utils.RedisConstants.*;
 
@@ -30,6 +31,9 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private InstitutionActivityMapper institutionActivityMapper;
 
     @Override
     public Result<List<Activity>> getActivity() {
@@ -91,8 +95,10 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
 
     @Override
-    public Result<Object> insert(Activity activity) {
-        stringRedisTemplate.opsForZSet().add(CACHE_ACTIVITYS_KEY, JSON.toJSONString(activity), System.currentTimeMillis());
+    public Result<Object> insert(Activity activity, Integer institutionId) {
+        Map<Integer, Activity> map = new HashMap<>();
+        map.put(institutionId, activity);
+        stringRedisTemplate.opsForZSet().add(CACHE_ACTIVITYS_KEY, JSON.toJSONString(map), System.currentTimeMillis());
         return Result.success("活动申请已提交，正在审批中！");
     }
 
@@ -123,20 +129,25 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public Result<Object> ratify() {
         Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_ACTIVITYS_KEY, 0l, Long.MAX_VALUE);
-        List<Activity> activities = new ArrayList<>();
+        List<Map<Integer, Activity>> activities = new ArrayList<>();
         for (String s : range) {
-            Activity activity = JSON.parseObject(s, Activity.class);
-            activities.add(activity);
+            Map map = JSON.parseObject(s, Map.class);
+            activities.add(map);
         }
         return Result.success(activities);
     }
 
 
     @Override
-    public Result<Object> add(Activity activity) {
+    public Result<Object> add(Activity activity, Integer institutionId) {
+        //添加在活动实体表中
         boolean save = save(activity);
         if (save) {
-
+            //添加在组织-活动表中
+            InstitutionActivity institutionActivity = new InstitutionActivity();
+            institutionActivity.setActivityId(activity.getActivityId());
+            institutionActivity.setInstitutionId(institutionId);
+            institutionActivityMapper.insert(institutionActivity);
             activity.setActivityId(null);
             stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, JSON.toJSONString(activity));
             //生成一个活动的验证码
@@ -148,8 +159,10 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     }
 
     @Override
-    public Result<Object> ratifyFalse(Activity activity) {
-        String jsonString = JSON.toJSONString(activity);
+    public Result<Object> ratifyFalse(Activity activity, Integer institutionId) {
+        Map<Integer, Activity> map = new HashMap<>();
+        map.put(institutionId, activity);
+        String jsonString = JSON.toJSONString(map);
         stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, jsonString);
         return Result.fail("审批完成，已驳回！");
     }

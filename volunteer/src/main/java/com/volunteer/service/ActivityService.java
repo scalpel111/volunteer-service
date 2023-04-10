@@ -4,6 +4,7 @@ import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
 import com.volunteer.entity.Activity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -23,13 +24,13 @@ public interface ActivityService extends IService<Activity> {
 
     Result<Activity> getByActivityId(Integer id);
 
-    Result<Object> insert(Activity activity);
+    Result<Object> insert(Activity activity, Integer institutionId);
 
     Result<Object> ratify();
 
-    Result<Object> add(Activity activity);
+    Result<Object> add(Activity activity, Integer institutionId);
 
-    Result<Object> ratifyFalse(Activity activity);
+    Result<Object> ratifyFalse(Activity activity, Integer institutionId);
 
     Result<Object> ratifyUpdate();
 
