@@ -12,6 +12,7 @@ import com.volunteer.service.ActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.InstitutionActivityService;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ import static com.volunteer.utils.RedisConstants.*;
 
 @Service
 public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> implements ActivityService {
-
+    @DateTimeFormat(pattern = "yyyy-MM-ddTHH:mm:ss")
     private LocalDateTime dateTime;
 
     @Resource
@@ -114,8 +115,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     }
 
     @Override
-    public Result<Activity> getByTheme(String theme) {
-        Activity activity = query().eq("theme", theme).one();
+    public Result<Activity> getByActivityId(Integer id) {
+        Activity activity = getById(id);
         return Result.success(activity);
     }
 

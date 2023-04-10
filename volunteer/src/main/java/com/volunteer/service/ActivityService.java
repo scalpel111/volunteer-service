@@ -21,7 +21,7 @@ public interface ActivityService extends IService<Activity> {
 
     Result<Object> deleteById(int id);
 
-    Result<Activity> getByTheme(String theme);
+    Result<Activity> getByActivityId(Integer id);
 
     Result<Object> insert(Activity activity);
 

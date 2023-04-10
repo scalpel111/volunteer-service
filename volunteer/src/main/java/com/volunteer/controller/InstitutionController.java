@@ -35,7 +35,7 @@ public class InstitutionController {
 
     //找组织搜索框查询
     @GetMapping("/name")
-    public Result<List<InstitutionDTO>> getByInstitutionName(String name) {
+    public Result<List<InstitutionDTO>> getByInstitutionName(@RequestParam String name) {
         return institutionService.getByInstitutionName(name);
     }
 

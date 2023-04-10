@@ -28,35 +28,26 @@ public class ActivityController {
     //按地址查询
     //首页默认查询
     @GetMapping("/address")
-    public Result<List<ActivityDTO>> getByAddress(String address){
-
+    public Result<List<ActivityDTO>> getByAddress(@RequestParam String address){
         return activityService.getByAddress(address);
     }
 
     //按标签查询
     @GetMapping("/tip")
-    public Result<List<ActivityDTO>> getByTip(String tip){
+    public Result<List<ActivityDTO>> getByTip(@RequestParam String tip){
         return activityService.getByTip(tip);
     }
 
     //搜索框模糊查询
     @GetMapping("/theme-like")
-    public Result<List<ActivityDTO>> listByTheme(String theme){
+    public Result<List<ActivityDTO>> listByTheme(@RequestParam String theme){
         return activityService.listByTheme(theme);
     }
 
-    //按id删除活动
-    //后台删除
-    @DeleteMapping("/{id}")
-    public Result<Object> deleteById(@PathVariable("id") int id){
-
-        return activityService.deleteById(id);
-    }
-
     //点击活动查看详情
-    @GetMapping("/theme")
-    public Result<Activity> getByTheme(String theme){
-        return activityService.getByTheme(theme);
+    @GetMapping("/{id}")
+    public Result<Activity> getByActivityId(@PathVariable("id") Integer id){
+        return activityService.getByActivityId(id);
     }
 
     //添加活动
