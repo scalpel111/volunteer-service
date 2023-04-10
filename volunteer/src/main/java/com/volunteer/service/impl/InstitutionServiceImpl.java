@@ -8,6 +8,7 @@ import com.volunteer.dto.InstitutionDTO;
 import com.volunteer.entity.Institution;
 import com.volunteer.entity.UserInstitution;
 import com.volunteer.mapper.InstitutionMapper;
+import com.volunteer.mapper.UserInstitutionMapper;
 import com.volunteer.service.InstitutionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.service.UserInstitutionService;
@@ -31,7 +32,7 @@ import static com.volunteer.utils.RedisConstants.*;
 public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Institution> implements InstitutionService {
 
     @Resource
-    private UserInstitutionService userInstitutionService;
+    private UserInstitutionMapper userInstitutionMapper;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -42,7 +43,7 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     public Result<List<InstitutionDTO>> wrap(List<Institution> institutions){
         List<InstitutionDTO> institutionDTOS = new ArrayList<>();
         for (Institution institution : institutions) {
-            int number = userInstitutionService.count(new QueryWrapper<UserInstitution>()
+            int number = userInstitutionMapper.selectCount(new QueryWrapper<UserInstitution>()
                     .eq("institution_id",institution.getInstitutionId()));
             InstitutionDTO institutionDTO = new InstitutionDTO(institution.getInstitutionId(),
                     institution.getInstitutionName(),institution.getAddress(),

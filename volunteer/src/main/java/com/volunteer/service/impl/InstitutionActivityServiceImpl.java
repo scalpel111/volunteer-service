@@ -35,8 +35,11 @@ public class InstitutionActivityServiceImpl extends ServiceImpl<InstitutionActiv
         for (Integer id1 : set) {
             ids.add(id1);
         }
-        List<Activity> institutionActivities = activityService.listByIds(ids);
         List<ActivityDTO> res = new ArrayList<>();
+        if(ids.size() == 0){
+            return Result.success(res);
+        }
+        List<Activity> institutionActivities = activityService.listByIds(ids);
         for (Activity activity : institutionActivities) {
             res.add(BeanUtil.copyProperties(activity,ActivityDTO.class));
         }

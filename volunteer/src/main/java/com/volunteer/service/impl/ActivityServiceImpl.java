@@ -30,9 +30,6 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    @Resource
-    private InstitutionActivityService institutionActivityService;
-
     @Override
     public Result<List<Activity>> getActivity() {
         List<Activity> list = list();
