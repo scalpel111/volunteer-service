@@ -38,5 +38,5 @@ mybatis-plus:
 
 file:
   save:
-    path:/root/data/images
+    path: /root/data/images
 #    path: D:\IdeaProjects\volunteer-service\volunteer\src\main\resources\static\images\
