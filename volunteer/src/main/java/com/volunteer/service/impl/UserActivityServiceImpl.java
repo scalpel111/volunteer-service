@@ -40,8 +40,6 @@ public class UserActivityServiceImpl extends ServiceImpl<UserActivityMapper, Use
     @Resource
     private ActivityService activityService;
 
-    @Resource
-    private UserActivityService userActivityService;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
