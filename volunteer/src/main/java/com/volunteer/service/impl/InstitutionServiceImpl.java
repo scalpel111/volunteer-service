@@ -91,17 +91,18 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     }
 
     @Override
-    public Result<Object> insert(Institution institution, String token) {
+    public Result<Object> insert(Institution institution) {
         boolean save = save(institution);
         institution.setInstitutionId(null);
         stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, JSON.toJSONString(institution));
         if (save) {
-            DecodedJWT jwt = JWTUtil.getToken(token);
-            String openid = jwt.getClaim("openid").asString();
-            User user = userService.query().eq("openid", openid).one();
+            //DecodedJWT jwt = JWTUtil.getToken(token);
+            //String openid = jwt.getClaim("openid").asString();
+            Institution institution1 = query().eq("admin_id", institution.getAdminId()).one();
+            User user = userService.query().eq("admin_id", institution.getAdminId()).one();
             if (user != null) {
                 UserInstitution userInstitution = new UserInstitution();
-                userInstitution.setInstitutionId(institution.getInstitutionId());
+                userInstitution.setInstitutionId(institution1.getInstitutionId());
                 userInstitution.setOpenid(user.getOpenid());
                 userInstitution.setStatus(1);
                 userInstitutionMapper.insert(userInstitution);

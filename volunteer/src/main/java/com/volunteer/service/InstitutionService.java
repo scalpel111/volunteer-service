@@ -19,7 +19,7 @@ public interface InstitutionService extends IService<Institution> {
 
     Result<Object> updateInstitution(Institution institution);
 
-    Result<Object> insert(Institution institution, String token);
+    Result<Object> insert(Institution institution);
 
     Result<Object> deleteById(int id);
 

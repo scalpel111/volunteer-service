@@ -6,6 +6,11 @@
                 @row-click="handleEdit"
                 >
             <el-table-column
+                    prop="institutionId"
+                    label="组织id"
+                    align="center">
+            </el-table-column>
+            <el-table-column
                     prop="theme"
                     label="活动主题"
                     align="center">
@@ -63,6 +68,7 @@ import axios from 'axios';
         },
         data(){
             return{
+                institutionId:'',
                 activity:{
                     theme:'',
                     startTime:'',
@@ -75,6 +81,7 @@ import axios from 'axios';
                 },
                 tableData:[
                     {
+                        institutionId:'0',
                         theme:'123',
                         startTime:'2333',
                         endTime:'21123',
@@ -84,6 +91,7 @@ import axios from 'axios';
                         tip:'qwqwqw'
                     },
                     {
+                        institutionId:'1',
                         theme:'0',
                         startTime:'0',
                         endTime:'0',
@@ -98,6 +106,7 @@ import axios from 'axios';
         methods:{
             handleEdit (row) {
                 //this.activity = row;
+                this.institutionId = row.institutionId;
                 this.activity.theme = row.theme;
                 this.activity.startTime = row.startTime;
                 this.activity.endTime = row.endTime;
@@ -122,7 +131,7 @@ import axios from 'axios';
                     type: 'warning'
                     }).then(() => {
                         //console.log("activity:"+this.activity),
-                        axios.post("/activity/ratifyOk",this.activity)
+                        axios.post("/activity/ratifyOk",{activity:this.activity,institution:this.institutionId})
                             .then(resp =>{
                                 if (resp.data.code === 0) {
                                     this.dialogVisible1 = false;
@@ -152,7 +161,7 @@ import axios from 'axios';
                     cancelButtonText: '取消',
                     type: 'warning'
                     }).then(() => {
-                        axios.delete("/activity/ratifyFalse",{data:this.activity})
+                        axios.delete("/activity/ratifyFalse",{data:{activity:this.activity,institutionId:this.institutionId}})
                             .then(resp =>{
                                 if (resp.data.code === 0) {
                                     this.dialogVisible1 = false;

@@ -59,8 +59,8 @@ public class InstitutionController {
 
     //web端审批通过，加入数据库
     @PutMapping("/ratifyOk")
-    public Result<Object> insert(@RequestBody Institution institution, @RequestHeader String token) {
-        return institutionService.insert(institution, token);
+    public Result<Object> insert(@RequestBody Institution institution) {
+        return institutionService.insert(institution);
     }
 
     //web端审批不通过，从redis之中移除

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
+import com.volunteer.dto.WebActivityDTO;
 import com.volunteer.entity.Activity;
 import com.volunteer.entity.InstitutionActivity;
 import com.volunteer.mapper.ActivityMapper;
@@ -129,10 +130,14 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public Result<Object> ratify() {
         Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_ACTIVITYS_KEY, 0l, Long.MAX_VALUE);
-        List<Map<Integer, Activity>> activities = new ArrayList<>();
+        List<WebActivityDTO> activities = new ArrayList<>();
         for (String s : range) {
-            Map map = JSON.parseObject(s, Map.class);
-            activities.add(map);
+            Map<Integer,Activity> map = JSON.parseObject(s, Map.class);
+            Set<Integer> set = map.keySet();
+            for (Integer id : set) {
+                Activity activity = map.get(id);
+                activities.add(new WebActivityDTO(id,activity));
+            }
         }
         return Result.success(activities);
     }
@@ -145,7 +150,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         if (save) {
             //添加在组织-活动表中
             InstitutionActivity institutionActivity = new InstitutionActivity();
-            institutionActivity.setActivityId(activity.getActivityId());
+            institutionActivity.setActivityId(query().eq("theme",activity.getTheme()).one().getActivityId());
             institutionActivity.setInstitutionId(institutionId);
             institutionActivityMapper.insert(institutionActivity);
             activity.setActivityId(null);
