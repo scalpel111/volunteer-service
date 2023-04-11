@@ -2,7 +2,7 @@ package com.volunteer.utils;
 
 import com.volunteer.entity.User;
 
-public class UserHolder {
+public class  UserHolder {
     private static final ThreadLocal<User> tl = new ThreadLocal<>();
 
     public static void saveUser(User user){

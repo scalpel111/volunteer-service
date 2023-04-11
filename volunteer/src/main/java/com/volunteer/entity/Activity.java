@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,11 +22,11 @@ public class Activity implements Serializable {
     private Integer activityId;
 
     private String theme;
-
 //    @TableId(value = "start_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-ddTHH:mm:ss")
     private LocalDateTime startTime;
-
 //    @TableId(value = "end_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-ddTHH:mm:ss")
     private LocalDateTime endTime;
 
     private String address;

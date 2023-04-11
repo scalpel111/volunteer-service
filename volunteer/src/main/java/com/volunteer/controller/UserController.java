@@ -2,6 +2,7 @@ package com.volunteer.controller;
 
 
 import com.volunteer.common.Result;
+import com.volunteer.dto.LoginDTO;
 import com.volunteer.dto.UserDTO;
 import com.volunteer.entity.User;
 import com.volunteer.service.UserService;
@@ -18,7 +19,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{code}")
-    public Result<Object> login(@PathVariable("code") String code){
+    public Result<String> login(@PathVariable("code") String code){
         return userService.login(code);
     }
 

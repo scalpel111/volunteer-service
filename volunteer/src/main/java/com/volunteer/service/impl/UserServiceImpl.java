@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
 import com.volunteer.common.WechatUtil;
+import com.volunteer.dto.LoginDTO;
 import com.volunteer.dto.UserDTO;
 import com.volunteer.entity.User;
 import com.volunteer.mapper.UserMapper;
@@ -27,11 +28,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Override
-    public Result<Object> login(String code) {
+    public Result<String> login(String code) {
 
         JSONObject sessionKeyOrOpenId = WechatUtil.getSessionKeyOrOpenId(code);
         String openId = sessionKeyOrOpenId.get("openid",String.class);
-        String sessionKey = sessionKeyOrOpenId.get("sessionkey",String.class);
+        String sessionKey = sessionKeyOrOpenId.get("session_key",String.class);
+        System.out.println(openId);
+        System.out.println(sessionKey);
 
         User user = getOne(new QueryWrapper<User>().eq("openid",openId));
         // 保存用户信息到 redis中
@@ -40,28 +43,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         map.put("openid",openId);
         String token = JWTUtil.getToken(map);
         if(user == null){
-            User user1 = new User();
-            user1.setOpenid(openId);
-            user1.setUsername(openId + sessionKey);
-            user1.setSessionkey(sessionKey);
-            save(user1);
+            user = new User();
+            user.setOpenid(openId);
+            user.setUsername(openId + sessionKey);
+            user.setSessionKey(sessionKey);
+            save(user);
 
             // 将User对象转为HashMap存储
-            UserDTO userDTO1 = BeanUtil.copyProperties(user1, UserDTO.class);
-            Map<String, Object> userMap = BeanUtil.beanToMap(userDTO1, new HashMap<>(),
-            CopyOptions.create()
-                    .setIgnoreNullValue(true)
-                    .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
-            // 存储
-            String tokenKey1 = LOGIN_USER_KEY + token;
-            stringRedisTemplate.opsForHash().putAll(tokenKey1, userMap);
-            // 设置token有效期
-            stringRedisTemplate.expire(tokenKey1, LOGIN_USER_TTL, TimeUnit.MINUTES);
-            return Result.success(token);
+//            UserDTO userDTO1 = BeanUtil.copyProperties(user1, UserDTO.class);
+//            Map<String, Object> userMap = BeanUtil.beanToMap(userDTO1, new HashMap<>(),
+//            CopyOptions.create()
+//                    .setIgnoreNullValue(true)
+//                    .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
+//            // 存储
+//            String tokenKey1 = LOGIN_USER_KEY + token;
+//            stringRedisTemplate.opsForHash().putAll(tokenKey1, userMap);
+//            // 设置token有效期
+//            stringRedisTemplate.expire(tokenKey1, LOGIN_USER_TTL, TimeUnit.MINUTES);
+//            return Result.success(token);
         }
         // 将User对象转为HashMap存储
-        UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
-        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
+        LoginDTO loginDTO = BeanUtil.copyProperties(user, LoginDTO.class);
+        Map<String, Object> userMap = BeanUtil.beanToMap(loginDTO, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
                         .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));

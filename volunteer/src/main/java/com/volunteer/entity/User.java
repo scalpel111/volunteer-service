@@ -1,6 +1,7 @@
 package com.volunteer.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -23,12 +24,14 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(value = "openid")
     private String openid;
 
 
     private String username;
 
-    private String sessionkey;
+    @TableField("sessionkey")
+    private String sessionKey;
 
     private String identifyId;
 

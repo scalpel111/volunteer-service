@@ -46,15 +46,21 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     public Result<List<ActivityDTO>> getByAddress(String address) {
         dateTime = LocalDateTime.now();
 
-        QueryWrapper<Activity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.gt("start_time", dateTime);
-        queryWrapper.like("address", address);
+//        QueryWrapper<Activity> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.gt("start_time", dateTime);
+//        queryWrapper.like("address", address);
 
-        List<Activity> list = list(queryWrapper);
+//        List<Activity> list = list(queryWrapper);
+
+        List<Activity> list = query()
+                .gt("start_time", dateTime)
+                .like("address", address)
+                .list();
 
         List<ActivityDTO> res = new ArrayList<>();
         for (Activity activity : list) {
-            res.add(BeanUtil.copyProperties(activity,ActivityDTO.class));
+            System.out.println(activity.getStartTime());
+            res.add(BeanUtil.copyProperties(activity, ActivityDTO.class));
         }
 
         return Result.success(res);
