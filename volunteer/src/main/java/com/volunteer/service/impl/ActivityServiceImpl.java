@@ -3,6 +3,7 @@ package com.volunteer.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
@@ -88,7 +89,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         dateTime = LocalDateTime.now();
         QueryWrapper<Activity> queryWrapper = new QueryWrapper<>();
         queryWrapper.gt("start_time", dateTime);
-        if (tip != null) {
+        if (tip != "") {
             queryWrapper.eq("tip", tip);
         }
         List<Activity> list = list(queryWrapper);
@@ -138,12 +139,12 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_ACTIVITYS_KEY, 0l, Long.MAX_VALUE);
         List<WebActivityDTO> activities = new ArrayList<>();
         for (String s : range) {
-            Map<Integer,Activity> map = JSON.parseObject(s, Map.class);
-            Set<Integer> set = map.keySet();
-            for (Integer id : set) {
-                Activity activity = map.get(id);
-                activities.add(new WebActivityDTO(id,activity));
-            }
+            String[] split = s.split(":", 2);
+            String s1 = split[0].substring(1);
+            Integer institutionId = Integer.parseInt(s1);
+            String s2 = split[1].substring(0, split[1].length() - 1);
+            Activity activity = JSON.parseObject(s2, Activity.class);
+            activities.add(new WebActivityDTO(institutionId,activity));
         }
         return Result.success(activities);
     }
@@ -152,6 +153,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public Result<Object> add(Activity activity, Integer institutionId) {
         //添加在活动实体表中
+        System.out.println(activity.toString());
         boolean save = save(activity);
         if (save) {
             //添加在组织-活动表中

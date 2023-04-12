@@ -23,10 +23,10 @@ public class Activity implements Serializable {
 
     private String theme;
 //    @TableId(value = "start_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-ddTHH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime startTime;
 //    @TableId(value = "end_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-ddTHH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime endTime;
 
     private String address;

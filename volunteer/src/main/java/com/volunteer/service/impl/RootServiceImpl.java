@@ -25,7 +25,7 @@ public class RootServiceImpl extends ServiceImpl<RootMapper, Root> implements Ro
         if(root1 == null){
             return Result.fail("登录失败");
         }
-        return Result.success();
+        return Result.success(root);
     }
 
     @Override

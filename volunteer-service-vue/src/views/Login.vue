@@ -107,10 +107,12 @@ export default {
             type: 'success',
             message: '登陆成功！'
           })
-          localStorage.setItem('admin', JSON.stringify(res.data.root.admin))
-          localStorage.setItem('password', JSON.stringify(res.data.root.password))
+          console.log(res.data)
+          localStorage.setItem('admin', JSON.stringify(res.data.admin))
+          localStorage.setItem('password', JSON.stringify(res.data.password))
           // 为了更新导航栏
-          this.$router.push('/Home')
+          this.$router.push("/home")
+          
         } else {
           this.$message({
             type: 'error',
