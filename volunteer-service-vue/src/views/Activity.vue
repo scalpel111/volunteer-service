@@ -139,7 +139,8 @@ import axios from 'axios';
                     type: 'warning'
                     }).then(() => {
                         //console.log("activity:"+this.activity),
-                        axios.post("/activity/ratifyOk?insitutionId="+this.institutionId,this.activity)
+                        let url = "/activity/ratifyOk/"+this.institutionId
+                        axios.post(url,this.activity)
                             .then(resp =>{
                                 if (resp.data.code === 0) {
                                     this.dialogVisible1 = false;
@@ -169,7 +170,7 @@ import axios from 'axios';
                     cancelButtonText: '取消',
                     type: 'warning'
                     }).then(() => {
-                        axios.delete("/activity/ratifyFalse",{data:{activity:this.activity,institutionId:this.institutionId}})
+                        axios.delete("/activity/ratifyFalse/"+this.institutionId,{data:this.activity})
                             .then(resp =>{
                                 if (resp.data.code === 0) {
                                     this.dialogVisible1 = false;

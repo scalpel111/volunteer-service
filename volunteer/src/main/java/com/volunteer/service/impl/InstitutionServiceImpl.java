@@ -1,10 +1,7 @@
 package com.volunteer.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.volunteer.common.JWTUtil;
 import com.volunteer.common.Result;
 import com.volunteer.dto.InstitutionDTO;
 import com.volunteer.entity.Institution;
@@ -14,7 +11,6 @@ import com.volunteer.mapper.InstitutionMapper;
 import com.volunteer.mapper.UserInstitutionMapper;
 import com.volunteer.service.InstitutionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.volunteer.service.UserInstitutionService;
 import com.volunteer.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -22,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,8 +91,6 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
         institution.setInstitutionId(null);
         stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, JSON.toJSONString(institution));
         if (save) {
-            //DecodedJWT jwt = JWTUtil.getToken(token);
-            //String openid = jwt.getClaim("openid").asString();
             Institution institution1 = query().eq("admin_id", institution.getAdminId()).one();
             User user = userService.query().eq("admin_id", institution.getAdminId()).one();
             if (user != null) {
@@ -147,7 +140,7 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
     public Result<Object> ratifyFalse(Institution institution) {
         String jsonString = JSON.toJSONString(institution);
         stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, jsonString);
-        return Result.fail("审批完成，已驳回！");
+        return Result.success();
     }
 
     @Override

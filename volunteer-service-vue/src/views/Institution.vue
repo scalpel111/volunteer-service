@@ -99,8 +99,9 @@ import axios from 'axios';
             select() {
                 axios.get("/institution/ratify")
                     .then(resp => {
-                    //设置表格数据
-                    this.tableData = resp.data.data.list;
+                        console.log(resp.data);
+                        //设置表格数据
+                        this.tableData = resp.data.data;
                 })
             },
             agree(){

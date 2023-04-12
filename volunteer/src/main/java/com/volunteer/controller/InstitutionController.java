@@ -58,7 +58,7 @@ public class InstitutionController {
     }
 
     //web端审批通过，加入数据库
-    @PutMapping("/ratifyOk")
+    @PostMapping("/ratifyOk")
     public Result<Object> insert(@RequestBody Institution institution) {
         return institutionService.insert(institution);
     }

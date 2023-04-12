@@ -13,5 +13,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:D:\\IdeaProjects\\volunteer-service\\volunteer\\src\\main\\resources\\static\\images\\");
+                //.addResourceLocations("file:\\root\\data\\images\\");
     }
 }

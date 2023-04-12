@@ -173,11 +173,14 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
     @Override
     public Result<Object> ratifyFalse(Activity activity, Integer institutionId) {
+        System.out.println(activity);
+        activity.setActivityId(null);
         Map<Integer, Activity> map = new HashMap<>();
         map.put(institutionId, activity);
         String jsonString = JSON.toJSONString(map);
         stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, jsonString);
-        return Result.fail("审批完成，已驳回！");
+        System.out.println(map);
+        return Result.success();
     }
 
     @Override
