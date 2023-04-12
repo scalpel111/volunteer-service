@@ -10,7 +10,7 @@ public class RedisConstants {
     public  static final String CACHE_ACTIVITYS_UPDATE_KEY = "cache:activitys:update:";
 //    public static final Long CACHE_ACTIVITYS_TTL = 3L;
 
-    public  static final String CACHE_INSTITUTIONS_KEY = "cache:institutions:";
+    public  static final String CACHE_INSTITUTIONS_KEY = "cache:institutions";
 
     public  static final String CACHE_USER_INSTITUTION_KEY = "cache:user_institutions:";
 

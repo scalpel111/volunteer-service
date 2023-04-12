@@ -162,7 +162,10 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             institutionActivity.setInstitutionId(institutionId);
             institutionActivityMapper.insert(institutionActivity);
             activity.setActivityId(null);
-            stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, JSON.toJSONString(activity));
+            Map<Integer, Activity> map = new HashMap<>();
+            map.put(institutionId, activity);
+            stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, JSON.toJSONString(map));
+//            System.out.println(remove.longValue());
             //生成一个活动的验证码
             String code = RandomUtil.randomNumbers(6);
             //将验证码存入到redis
@@ -178,6 +181,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         Map<Integer, Activity> map = new HashMap<>();
         map.put(institutionId, activity);
         String jsonString = JSON.toJSONString(map);
+        System.out.println(jsonString);
         stringRedisTemplate.opsForZSet().remove(CACHE_ACTIVITYS_KEY, jsonString);
         System.out.println(map);
         return Result.success();

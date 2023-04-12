@@ -92,12 +92,13 @@ public class InstitutionServiceImpl extends ServiceImpl<InstitutionMapper, Insti
         stringRedisTemplate.opsForZSet().remove(CACHE_INSTITUTIONS_KEY, JSON.toJSONString(institution));
         if (save) {
             Institution institution1 = query().eq("admin_id", institution.getAdminId()).one();
-            User user = userService.query().eq("admin_id", institution.getAdminId()).one();
+            User user = userService.query().eq("identify_id", institution.getAdminId()).one();
             if (user != null) {
                 UserInstitution userInstitution = new UserInstitution();
                 userInstitution.setInstitutionId(institution1.getInstitutionId());
                 userInstitution.setOpenid(user.getOpenid());
                 userInstitution.setStatus(1);
+                System.out.println(userInstitution);
                 userInstitutionMapper.insert(userInstitution);
             }
             return Result.success("组织入驻成功！");

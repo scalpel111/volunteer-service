@@ -18,18 +18,18 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override       //添加拦截器
     public void addInterceptors(InterceptorRegistry registry) {
         // token刷新的拦截器
-//        registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
-//                .addPathPatterns("/**")
-//                .order(0);
-//        // 登录拦截器
-//        registry.addInterceptor(new LoginInterceptor())
-//                .excludePathPatterns(
-//                        "/activity/**",
-//                        "/institution-activity",
-//                        "/institution/**",
-//                        "/user-activity/**",
-//                        "/user/**",
-//                        "/user-institution/**"
-//                ).order(1);
+        registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
+                .addPathPatterns("/**")
+                .order(0);
+        // 登录拦截器
+        registry.addInterceptor(new LoginInterceptor())
+                .excludePathPatterns(
+                        "/activity/**",
+                        "/institution-activity",
+                        "/institution/**",
+                        "/user-activity/**",
+                        "/user/**",
+                        "/user-institution/**"
+                ).order(1);
     }
 }
