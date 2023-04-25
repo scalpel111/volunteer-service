@@ -12,6 +12,7 @@ axios.defaults.baseURL = 'http://localhost:8090'
 Vue.prototype.axios = axios
 Vue.config.productionTip = false
 Vue.use(ElementUI, { size: 'small' })
+// Vue.prototype.$host = 'C:\Users\lenovo\Desktop\计算机设计大赛\图片\许可证.png'
 
 new Vue({
   router,

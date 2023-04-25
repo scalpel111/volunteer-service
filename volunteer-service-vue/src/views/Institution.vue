@@ -38,7 +38,8 @@
                     <template slot-scope="scope">
                             <el-popover placement="right" trigger="click"> <!--trigger属性值：hover、click、focus 和 manual-->
                                 <a :href="scope.row.proof" target="_blank" title="查看最大化图片">
-                                <img :src="scope.row.proof" style="width: 300px;height: 300px">
+                                <img :src="scope.row.proof" style="width: 100px;height: 150px">
+                                <!-- scope.row.proof -->
                             </a>
                             <img slot="reference" :src="scope.row.proof" style="width: 50px;height: 50px; cursor:pointer">
                         </el-popover>
@@ -81,7 +82,7 @@ import axios from 'axios';
                         "admin": '0',
                         "adminId": '0',
                         "tellphone": '0',
-                        "proof": 'http://localhost:8090/images/6bfd4e9d9e7d46cd8e6375b1a4b8d0eb.jpg',
+                        "proof": "../imgs/许可证.png",
                         "address": '0'
                     }
                 ]
@@ -102,6 +103,7 @@ import axios from 'axios';
                         console.log(resp.data);
                         //设置表格数据
                         this.tableData = resp.data.data;
+                        // console.log("shisi");
                 })
             },
             agree(){

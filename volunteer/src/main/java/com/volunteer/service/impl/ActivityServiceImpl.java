@@ -2,8 +2,8 @@ package com.volunteer.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.common.Result;
 import com.volunteer.dto.ActivityDTO;
@@ -17,7 +17,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -89,7 +88,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         dateTime = LocalDateTime.now();
         QueryWrapper<Activity> queryWrapper = new QueryWrapper<>();
         queryWrapper.gt("start_time", dateTime);
-        if (tip != "") {
+        if (StrUtil.isNotBlank(tip)) {
             queryWrapper.eq("tip", tip);
         }
         List<Activity> list = list(queryWrapper);
@@ -136,8 +135,11 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
     @Override
     public Result<Object> ratify() {
-        Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_ACTIVITYS_KEY, 0l, Long.MAX_VALUE);
         List<WebActivityDTO> activities = new ArrayList<>();
+        Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_ACTIVITYS_KEY, 0l, Long.MAX_VALUE);
+        if (range == null) {
+            return Result.success(activities);
+        }
         for (String s : range) {
             String[] split = s.split(":", 2);
             String s1 = split[0].substring(1);
@@ -153,8 +155,11 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public Result<Object> add(Activity activity, Integer institutionId) {
         //添加在活动实体表中
-        System.out.println(activity.toString());
         boolean save = save(activity);
+        Activity one = query().eq("theme", activity.getTheme())
+                .eq("req", activity.getReq())
+                .eq("address", activity.getAddress())
+                .eq("recruit_number", activity.getRecruitNumber()).one();
         if (save) {
             //添加在组织-活动表中
             InstitutionActivity institutionActivity = new InstitutionActivity();
@@ -169,7 +174,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             //生成一个活动的验证码
             String code = RandomUtil.randomNumbers(6);
             //将验证码存入到redis
-            stringRedisTemplate.opsForValue().set(CHECK_KEY + activity.getActivityId(), code);
+            stringRedisTemplate.opsForValue().set(CHECK_KEY + one.getActivityId(), code);
             return Result.success("活动审批成功，活动编码为：" + code);
         } else return Result.fail("添加失败！");
     }
@@ -189,8 +194,11 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
     @Override
     public Result<Object> ratifyUpdate() {
-        Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_ACTIVITYS_UPDATE_KEY, 0l, Long.MAX_VALUE);
         List<Activity> activities = new ArrayList<>();
+        Set<String> range = stringRedisTemplate.opsForZSet().range(CACHE_ACTIVITYS_UPDATE_KEY, 0l, Long.MAX_VALUE);
+        if (range == null) {
+            return Result.success(activities);
+        }
         for (String s : range) {
             Activity activity = JSON.parseObject(s, Activity.class);
             activities.add(activity);
